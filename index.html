@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Responsive To-Do List with Login</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Login and Signup -->
+    <div id="auth-section">
+      <h2 id="auth-title">Login</h2>
+      <div id="login-form">
+        <input type="text" id="username" placeholder="Username" />
+        <input type="password" id="password" placeholder="Password" />
+        <button id="login-button">Login</button>
+        <p id="switch-auth">
+          Don't have an account? <span id="show-signup">Sign up</span>
+        </p>
+      </div>
+      <div id="signup-form" style="display: none;">
+        <input type="text" id="new-username" placeholder="Username" />
+        <input type="password" id="new-password" placeholder="Password" />
+        <button id="signup-button">Sign up</button>
+        <p id="show-login">
+          Already have an account? <span id="switch-to-login">Login</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Task Tracker Section -->
+    <div id="todo-section" style="display: none;">
+      <h1 class="app-title">To-Do List</h1>
+      <div class="filter-section">
+        <button id="show-all">All</button>
+        <button id="show-completed">Completed</button>
+        <button id="show-uncompleted">Uncompleted</button>
+      </div>
+      <div class="input-section">
+        <input type="text" id="taskInput" class="task-input" placeholder="Add a new task..." />
+        <button id="addTaskButton" class="add-task-button">Add Task</button>
+      </div>
+      <ul id="taskList" class="task-list"></ul>
+      <div id="calendar">
+        <input type="date" id="date-picker" />
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
