@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact Us - Streamline</title>
+  <style>
+    body {
+      background-color: #ffe6f0;
+      font-family: "Times New Roman", Times, serif;
+      margin: 0;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #c71585;
+    }
+
+    .logo {
+      font-size: 42px;
+      font-weight: bold;
+      color: #c71585;
+      text-shadow: 2px 2px #ffb6c1;
+      margin-bottom: 20px;
+    }
+
+    .contact-card {
+      background-color: #fff;
+      border: 2px solid #ff69b4;
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 4px 10px rgba(255, 20, 147, 0.2);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-family: "Times New Roman", Times, serif;
+    }
+
+    button {
+      padding: 10px;
+      background-color: #ff69b4;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #d94c96;
+    }
+
+    .success-message {
+      margin-top: 15px;
+      color: green;
+      text-align: center;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="logo">Streamline</div>
+
+  <div class="contact-card">
+    <h2>Contact Us</h2>
+    <form id="contactForm">
+      <label for="name">Your Name:</label>
+      <input type="text" id="name" name="name" required>
+
+      <label for="email">Your Email:</label>
+      <input type="email" id="email" name="email" required>
+
+      <label for="message">Message:</label>
+      <textarea id="message" name="message" rows="5" required></textarea>
+
+      <!-- Hidden fields for Formsubmit -->
+      <input type="hidden" name="_subject" value="New message from Streamline Contact Form!">
+      <input type="hidden" name="_captcha" value="false">
+
+      <button type="submit">Send Message</button>
+      <p class="success-message" id="successMessage">✅ Message sent successfully!</p>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById("contactForm").addEventListener("submit", function (event) {
+      event.preventDefault(); // Prevent default submission
+
+      // Simple client-side validation
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const message = document.getElementById("message").value.trim();
+
+      if (!name || !email || !message) {
+        alert("Please fill in all fields.");
+        return;
+      }
+
+      // Send the form using FormSubmit
+      fetch("https://formsubmit.co/ajax/uwayoolga@gmail.com", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, message, _subject: "New message from Streamline Contact Form!" })
+      })
+      .then(response => {
+        if (response.ok) {
+          document.getElementById("successMessage").style.display = "block";
+          document.getElementById("contactForm").reset();
+        } else {
+          alert("❌ Error sending message. Please try again.");
+        }
+      })
+      .catch(error => {
+        alert("❌ Network error. Please try again later.");
+      });
+    });
+  </script>
+
+</body>
+</html>
