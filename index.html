@@ -1,1 +1,210 @@
- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Streamline | Welcome</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Times New Roman", Times, serif;
+      background: linear-gradient(to bottom, #ffe6f0, #fff);
+      color: #c71585;
+    }
+
+    /* Navigation Bar */
+    nav {
+      background-color: #fff;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 10%;
+    }
+
+    .logo {
+      font-size: 28px;
+      font-weight: bold;
+      color: #c71585;
+      flex: 1;
+    }
+
+    .nav-links,
+    .nav-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-links a,
+    .nav-buttons a {
+      color: #c71585;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .nav-links a:hover {
+      color: #ff69b4;
+    }
+
+    .nav-buttons a {
+      padding: 10px 18px;
+      border: 2px solid #ff69b4;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+    }
+
+    .nav-buttons a:hover {
+      background-color: #ff69b4;
+      color: white;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 60px 20px 40px;
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      color: #b03060;
+      max-width: 600px;
+      margin: 0 auto 40px;
+    }
+
+    .hero-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .hero-buttons a {
+      padding: 14px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .get-started {
+      background-color: #ff69b4;
+      color: white;
+    }
+
+    .get-started:hover {
+      background-color: #c71585;
+    }
+
+    .download {
+      border: 2px solid #ff69b4;
+      color: #c71585;
+    }
+
+    .download:hover {
+      background-color: #ffe6f0;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 14px;
+      color: #c71585;
+      padding: 20px;
+    }
+
+    /* Responsive Layout */
+    @media (max-width: 768px) {
+      nav {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px;
+      }
+
+      .logo {
+        margin-bottom: 10px;
+      }
+
+      .nav-links,
+      .nav-buttons {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+      }
+
+      .nav-links a,
+      .nav-buttons a {
+        width: 100%;
+        padding: 10px 0;
+      }
+
+      .hero h1 {
+        font-size: 2rem;
+      }
+
+      .hero p {
+        font-size: 1rem;
+      }
+
+      .hero-buttons a {
+        width: 80%;
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero h1 {
+        font-size: 1.75rem;
+      }
+
+      .hero p {
+        font-size: 0.95rem;
+      }
+
+      .hero-buttons {
+        gap: 10px;
+      }
+
+      .hero-buttons a {
+        font-size: 0.95rem;
+        padding: 12px 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav>
+    <div class="logo">Streamline</div>
+    <div class="nav-links"> 
+      <a href="download.html">Demo</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </div>
+    <div class="nav-buttons">
+      <a href="login.html" style="margin: 10px;">Sign In</a>
+      <a href="signup.html">Sign Up</a>
+    </div>
+  </nav>
+
+  <!-- Hero Content -->
+  <div class="hero">
+    <h1>Stay Organized, Stay Creative.</h1>
+    <p>Join a community of planners who capture ideas, organize tasks, and get things done beautifully with Streamline.</p>
+    <div class="hero-buttons">
+      <a href="signup.html" class="get-started">Get Started</a>
+      <a href="download.html" class="download">Watch Demo</a>
+    </div>
+  </div>
+
+  <footer style="margin-bottom: 160px;">&copy; 2025 Streamline. Built to Simplify Your Life.</footer>
+
+</body>
+</html>
