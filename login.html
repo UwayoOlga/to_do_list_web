@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login - Streamline</title>
+  <link rel="icon" href="images/favicon.png" type="image/png">
+
   <style>
     * {
       box-sizing: border-box;
@@ -125,8 +127,21 @@
         alert("You must agree to the Terms & Policy before logging in.");
         return false;
       }
-      return true;
+  
+      // Basic check – if passed, redirect to dashboard
+      // (You can replace this with actual login logic later)
+      const email = document.getElementById("login-email").value;
+      const password = document.getElementById("login-password").value;
+  
+      if (email && password.length >= 6) {
+        window.location.href = "dashboard.html";
+        return false;  
+      }
+  
+      alert("Invalid email or password.");
+      return false;
     }
   </script>
+  
 </body>
 </html>

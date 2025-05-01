@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard - Streamline</title>
+  <link rel="icon" href="images/favicon.png" type="image/png">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Times New Roman", serif;
+    }
+
+    body {
+      display: flex;
+      min-height: 100vh;
+      background-color: #fff0f5;
+    }
+
+    .sidebar {
+      width: 250px;
+      background-color: #ffe6f0;
+      padding: 20px;
+      border-right: 2px solid #ffc0cb;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .logo {
+      font-size: 28px;
+      font-weight: bold;
+      color: #c71585;
+      text-align: center;
+    }
+
+    .sidebar h4 {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #a52a6d;
+    }
+
+    .sidebar a {
+      color: #c71585;
+      text-decoration: none;
+      font-weight: bold;
+      display: block;
+      padding: 6px 0;
+      cursor: pointer;
+    }
+
+    .sidebar a:hover {
+      text-decoration: underline;
+    }
+
+    .content {
+      flex: 1;
+      padding: 40px 30px;
+      display: flex;
+      flex-direction: column;
+      background-color: #fff;
+    }
+
+    .content-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .content-header h1 {
+      font-size: 28px;
+      color: #c71585;
+    }
+
+    .add-task {
+      background-color: #ff69b4;
+      color: white;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .add-task:hover {
+      background-color: #e0559c;
+    }
+
+    .empty-state {
+      text-align: center;
+      margin-top: 100px;
+      color: #666;
+    }
+
+    .empty-state img {
+      width: 180px;
+      opacity: 0.9;
+    }
+
+    .empty-state p {
+      margin-top: 16px;
+      font-size: 16px;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    .modal-content {
+      background-color: #fff;
+      margin: 10% auto;
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    }
+
+    .modal-content h3 {
+      color: #c71585;
+      margin-bottom: 10px;
+    }
+
+    .modal-content label {
+      display: block;
+      margin-top: 10px;
+    }
+
+    .modal-content input,
+    .modal-content textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    .modal-content button {
+      margin-top: 15px;
+      background-color: #ff69b4;
+      color: white;
+      border: none;
+      padding: 10px;
+      width: 100%;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .modal-content button:hover {
+      background-color: #e0559c;
+    }
+
+    .close {
+      float: right;
+      font-size: 24px;
+      font-weight: bold;
+      color: #999;
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 2px solid #ffc0cb;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .content {
+        padding: 20px;
+      }
+
+      .content-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <div class="logo">Streamline</div>
+    <a href="#">📅 Today</a>
+    <a href="#">📈 Upcoming</a>
+    <a href="#">✅ Completed</a>
+
+    <h4>My Projects</h4>
+    <a href="#">🎓 School</a>
+    <a href="#">🚀 Startup</a>
+    <a href="#">+ Add Project</a>
+  </div>
+
+  <div class="content">
+    <div class="content-header">
+      <h1>Today</h1>
+      <button class="add-task" onclick="openTaskForm()">+ Add Task</button>
+    </div>
+
+    <div class="empty-state">
+      <img src="https://cdn-icons-png.flaticon.com/512/955/955232.png" alt="No tasks">
+      <p>What do you need to get done today?<br>Click the + to add a task.</p>
+    </div>
+  </div>
+ 
+  <div id="taskFormModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeTaskForm()">&times;</span>
+      <h3>Add New Task</h3>
+      <form onsubmit="submitTask(event)">
+        <label for="task-title">Title</label>
+        <input type="text" id="task-title" required />
+
+        <label for="task-desc">Description</label>
+        <textarea id="task-desc" rows="3" required></textarea>
+
+        <label for="task-date">Due Date</label>
+        <input type="date" id="task-date" required />
+
+        <button type="submit">Save Task</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function openTaskForm() {
+      document.getElementById("taskFormModal").style.display = "block";
+    }
+
+    function closeTaskForm() {
+      document.getElementById("taskFormModal").style.display = "none";
+    }
+
+    function submitTask(event) {
+      event.preventDefault();
+      const title = document.getElementById("task-title").value;
+      const desc = document.getElementById("task-desc").value;
+      const date = document.getElementById("task-date").value;
+
+      alert(`Task Added:\n\nTitle: ${title}\nDescription: ${desc}\nDue Date: ${date}`);
+      document.getElementById("taskFormModal").style.display = "none";
+      event.target.reset();
+    }
+ 
+    window.onclick = function(event) {
+      const modal = document.getElementById("taskFormModal");
+      if (event.target == modal) {
+        closeTaskForm();
+      }
+    }
+  </script>
+
+</body>
+</html>
