@@ -88,12 +88,21 @@
       color: #c71585;
       text-decoration: underline;
     }
+    .logo-container {
+  display: flex;
+  align-items: center;  
+}
+
+.logo-container img {
+  margin-right: 5px;  
+}
   </style>
 </head>
 <body>
-
-  <div class="logo">Streamline</div>
-
+  <div class="logo-container">
+    <img src="images/favicon.png" alt="Company Logo" width="50" height="auto">
+    <span class="logo" style="margin-top: 35px;">Streamline</span>
+  </div>
   <div class="card">
     <h2>Login</h2>
     <form id="loginForm" onsubmit="return validateLogin()">

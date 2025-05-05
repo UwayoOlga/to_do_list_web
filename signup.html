@@ -28,7 +28,7 @@
       font-size: 42px;
       font-weight: bold;
       color: #c71585;
-      margin-bottom: 40px;
+      margin-bottom: 20px;
       text-shadow: 2px 2px #ffb6c1;
     }
 
@@ -90,12 +90,22 @@
       color: #c71585;
       text-decoration: underline;
     }
+    .logo-container {
+  display: flex;
+  align-items: center;  
+}
+
+.logo-container img {
+  margin-right: 5px;  
+  margin-top: -14px;
+}
   </style>
 </head>
 <body>
-
-  <div class="logo">Streamline</div>
-
+  <div class="logo-container">
+    <img src="images/favicon.png" alt="Company Logo" width="50" height="auto">
+    <span class="logo">Streamline</span>
+  </div>
   <div class="card">
     <h2>Sign Up</h2>
     <form id="signupForm" onsubmit="return validateSignup()">
