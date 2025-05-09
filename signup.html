@@ -90,15 +90,16 @@
       color: #c71585;
       text-decoration: underline;
     }
-    .logo-container {
-  display: flex;
-  align-items: center;  
-}
 
-.logo-container img {
-  margin-right: 5px;  
-  margin-top: -14px;
-}
+    .logo-container {
+      display: flex;
+      align-items: center;  
+    }
+
+    .logo-container img {
+      margin-right: 5px;  
+      margin-top: -14px;
+    }
   </style>
 </head>
 <body>
@@ -106,9 +107,10 @@
     <img src="images/favicon.png" alt="Company Logo" width="50" height="auto">
     <span class="logo">Streamline</span>
   </div>
+
   <div class="card">
     <h2>Sign Up</h2>
-    <form id="signupForm" onsubmit="return validateSignup()">
+    <form id="signupForm">
       <label for="signup-name">Full Name:</label>
       <input type="text" id="signup-name" name="name" required />
 
@@ -129,17 +131,54 @@
     </div>
   </div>
 
-  <script>
-    function validateSignup() {
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA_iYY1cpnwjW4idgEmpVScj3SecxN2Qss",
+      authDomain: "todolistwebapp-eb8cb.firebaseapp.com",
+      projectId: "todolistwebapp-eb8cb",
+      storageBucket: "todolistwebapp-eb8cb.appspot.com",
+      messagingSenderId: "869793857380",
+      appId: "1:869793857380:web:79b4a200e73bae6c088471",
+      measurementId: "G-7LX95XNM4M"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    document.getElementById("signupForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById("signup-name").value.trim();
+      const email = document.getElementById("signup-email").value.trim();
       const password = document.getElementById("signup-password").value;
       const confirm = document.getElementById("signup-confirm").value;
 
       if (password !== confirm) {
         alert("Passwords do not match!");
-        return false;
+        return;
       }
-      return true;
-    }
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        await setDoc(doc(db, "users", user.uid), {
+          name: name,
+          email: email,
+          createdAt: new Date()
+        });
+
+        alert("Sign up successful!");
+        window.location.href = "login.html";
+      } catch (error) {
+        alert("Error: " + error.message);
+      }
+    });
   </script>
 </body>
 </html>

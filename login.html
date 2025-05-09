@@ -21,13 +21,24 @@
       justify-content: start;
       min-height: 100vh;
       padding: 40px 20px;
+      overflow: hidden;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .logo-container img {
+      margin-right: 5px;
+      margin-top: -14px;
     }
 
     .logo {
       font-size: 42px;
       font-weight: bold;
       color: #c71585;
-      margin-bottom: 40px;
+      margin-bottom: 20px;
       text-shadow: 2px 2px #ffb6c1;
     }
 
@@ -39,6 +50,7 @@
       padding: 30px;
       width: 100%;
       max-width: 400px;
+      padding-top: 10px;
     }
 
     h2 {
@@ -88,69 +100,69 @@
       color: #c71585;
       text-decoration: underline;
     }
-    .logo-container {
-  display: flex;
-  align-items: center;  
-}
-
-.logo-container img {
-  margin-right: 5px;  
-}
   </style>
 </head>
 <body>
+
   <div class="logo-container">
-    <img src="images/favicon.png" alt="Company Logo" width="50" height="auto">
-    <span class="logo" style="margin-top: 35px;">Streamline</span>
+    <img src="images/favicon.png" alt="Company Logo" width="50">
+    <span class="logo">Streamline</span>
   </div>
+
   <div class="card">
     <h2>Login</h2>
-    <form id="loginForm" onsubmit="return validateLogin()">
+    <form id="loginForm">
       <label for="login-email">Email:</label>
       <input type="email" id="login-email" name="email" required />
 
       <label for="login-password">Password:</label>
-      <input type="password" id="login-password" name="password" minlength="6" required />
-
-      <label style="margin: 10px 0;">
-        <input type="checkbox" id="termsCheckbox" required />
-        I agree to the <a href="terms-policy.html" style="color:#c71585;">Terms & Policy</a>
-      </label>
+      <input type="password" id="login-password" name="password" required />
 
       <button type="submit">Login</button>
     </form>
-
+    <div style="margin: 7px; font-size: 15px;">
+      By logging in, you agree to our 
+      <a href="terms-policy.html" target="_blank" style="color:#c71585; text-decoration: underline;">Terms & Conditions</a>.
+    </div>
+    
     <div class="link">
       <a href="signup.html">Don't have an account? Sign up</a>
     </div>
-
-    <div class="link" style="margin-top: 10px;">
-      <a href="forgot-password.html">Forgot Password?</a>
-    </div>
   </div>
+ 
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+ 
+    const firebaseConfig = {
+      apiKey: "AIzaSyA_iYY1cpnwjW4idgEmpVScj3SecxN2Qss",
+      authDomain: "todolistwebapp-eb8cb.firebaseapp.com",
+      projectId: "todolistwebapp-eb8cb",
+      storageBucket: "todolistwebapp-eb8cb.appspot.com",
+      messagingSenderId: "869793857380",
+      appId: "1:869793857380:web:79b4a200e73bae6c088471",
+      measurementId: "G-7LX95XNM4M"
+    };
 
-  <script>
-    function validateLogin() {
-      const termsChecked = document.getElementById("termsCheckbox").checked;
-      if (!termsChecked) {
-        alert("You must agree to the Terms & Policy before logging in.");
-        return false;
-      }
-  
-      // Basic check – if passed, redirect to dashboard
-      // (You can replace this with actual login logic later)
-      const email = document.getElementById("login-email").value;
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+     const loginForm = document.getElementById("loginForm");
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("login-email").value.trim();
       const password = document.getElementById("login-password").value;
-  
-      if (email && password.length >= 6) {
-        window.location.href = "dashboard.html";
-        return false;  
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        alert("Login successful!");
+        window.location.href = "dashboard.html"; 
+      } catch (error) {
+        alert("Login failed: " + error.message);
       }
-  
-      alert("Invalid email or password.");
-      return false;
-    }
+    });
   </script>
-  
+
 </body>
 </html>
