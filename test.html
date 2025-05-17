@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SCA Admin Dashboard - Streamline</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: #fff5f9; color: #333; display: flex; min-height: 100vh; justify-content: center; align-items: center; }
+    .dashboard-container { width: 800px; height: 800px; background-color: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
+    .sidebar { background-color: #fff; border-bottom: 1px solid #ddd; padding: 10px 0; }
+    .sidebar .logo { color: #c71585; font-size: 20px; text-align: center; margin-bottom: 10px; }
+    .sidebar a { display: inline-block; color: #666; padding: 8px 15px; text-decoration: none; font-size: 12px; }
+    .sidebar a:hover, .sidebar a.active { background-color: #ff91c8; color: #fff; border-radius: 5px; }
+    .content { flex: 1; padding: 15px; overflow-y: auto; }
+    .header { background-color: #ff69b4; color: #fff; padding: 10px; border-radius: 5px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+    .header h1 { font-size: 18px; }
+    .section { background-color: #fff0f5; padding: 10px; border-radius: 5px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .section h2 { color: #c71585; font-size: 16px; margin-bottom: 8px; }
+    .table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .table th, .table td { padding: 6px; text-align: left; border-bottom: 1px solid #ddd; }
+    .table th { background-color: #ff91c8; color: #fff; }
+    .table td button { background-color: #ff69b4; color: #fff; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 12px; }
+    .table td button:hover { background-color: #e0559c; }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
+    .modal-content { background-color: #fff; margin: 10% auto; padding: 15px; border-radius: 5px; width: 90%; max-width: 400px; }
+    .modal-content h3 { color: #c71585; margin-bottom: 10px; font-size: 16px; }
+    .modal-content .form-group { margin-bottom: 8px; }
+    .modal-content label { display: block; color: #666; font-size: 12px; }
+    .modal-content input, .modal-content textarea, .modal-content select { width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 3px; font-size: 12px; }
+    .modal-content button { background-color: #ff69b4; color: #fff; border: none; padding: 8px; border-radius: 3px; cursor: pointer; margin-right: 8px; font-size: 12px; }
+    .modal-content button:hover { background-color: #e0559c; }
+    .close { color: #c71585; float: right; font-size: 18px; cursor: pointer; }
+    .report-button { background-color: #ff91c8; color: #fff; border: none; padding: 8px 12px; border-radius: 3px; cursor: pointer; font-size: 12px; }
+    .report-button:hover { background-color: #e0559c; }
+    .filter-group { margin-bottom: 10px; }
+    .filter-group select, .filter-group button { padding: 6px; border-radius: 3px; font-size: 12px; }
+    .filter-group select { border: 1px solid #ddd; }
+    @media (max-width: 768px) {
+      .dashboard-container { width: 100%; height: auto; }
+      .sidebar { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+      .sidebar a { padding: 6px 10px; }
+      .content { padding: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <div class="sidebar">
+      <div class="logo"><i class="fas fa-stream"></i> Streamline Admin</div>
+      <a href="#" class="active" onclick="showSection('users')">User Management</a>
+      <a href="#" onclick="showSection('support')">Support Requests</a>
+      <a href="#" onclick="showSection('tasks')">Community Tasks</a>
+      <a href="#" onclick="showSection('moderation')">Content Moderation</a>
+      <a href="#" onclick="showSection('reports')">Reports</a>
+      <a href="#" onclick="showSection('training')">Training Guidance</a>
+      <a href="#" onclick="logout()">Logout</a>
+    </div>
+
+    <div class="content">
+      <div class="header">
+        <h1>SCA Admin Dashboard</h1>
+        <div id="userInfo">Welcome, Admin | <span onclick="logout()" style="cursor: pointer;">Logout</span></div>
+      </div>
+
+      <!-- User Management Section -->
+      <div id="users" class="section">
+        <h2>User Management</h2>
+        <table class="table">
+          <thead>
+            <tr><th>Email</th><th>Name</th><th>Role</th><th>Status</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="usersTable"></tbody>
+        </table>
+        <button onclick="openUserModal()">Add User</button>
+      </div>
+
+      <!-- Support Requests Section -->
+      <div id="support" class="section" style="display: none;">
+        <h2>Support Requests</h2>
+        <table class="table">
+          <thead>
+            <tr><th>Email</th><th>Subject</th><th>Message</th><th>Status</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="supportTable"></tbody>
+        </table>
+      </div>
+
+      <!-- Community Tasks Section -->
+      <div id="tasks" class="section" style="display: none;">
+        <h2>Community Tasks</h2>
+        <div class="filter-group">
+          <select id="taskFilter">
+            <option value="all">All</option>
+            <option value="completed">Completed</option>
+            <option value="pending">Pending</option>
+            <option value="chapter">By Chapter</option>
+          </select>
+          <select id="chapterFilter" style="display: none;">
+            <option value="">Select Chapter</option>
+            <option value="lagos">Lagos</option>
+            <option value="nairobi">Nairobi</option>
+          </select>
+          <button onclick="filterTasks()">Filter</button>
+        </div>
+        <table class="table">
+          <thead>
+            <tr><th>Title</th><th>Project</th><th>Due Date</th><th>Status</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="tasksTable"></tbody>
+        </table>
+      </div>
+
+      <!-- Content Moderation Section -->
+      <div id="moderation" class="section" style="display: none;">
+        <h2>Content Moderation</h2>
+        <table class="table">
+          <thead>
+            <tr><th>Title</th><th>Description</th><th>Status</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="moderationTable"></tbody>
+        </table>
+      </div>
+
+      <!-- Reports Section -->
+      <div id="reports" class="section" style="display: none;">
+        <h2>Reports</h2>
+        <button class="report-button" onclick="generateReport()">Generate Task Report</button>
+      </div>
+
+      <!-- Training Guidance Section -->
+      <div id="training" class="section" style="display: none;">
+        <h2>Training Guidance</h2>
+        <p>Resources for SCA Members:</p>
+        <ul>
+          <li><a href="#" onclick="openTutorial('task-management')">Task Management Guide</a></li>
+          <li><a href="#" onclick="openTutorial('project-setup')">Project Setup Guide</a></li>
+          <li><a href="#" onclick="downloadResource()">Download Admin Manual</a></li>
+        </ul>
+      </div>
+
+      <!-- User Modal -->
+      <div id="userModal" class="modal">
+        <div class="modal-content">
+          <span class="close" onclick="closeModal('userModal')">×</span>
+          <h3 id="userModalTitle">Add User</h3>
+          <div id="userForm">
+            <div class="form-group">
+              <label for="user-email">Email</label>
+              <input type="email" id="user-email" required>
+            </div>
+            <div class="form-group">
+              <label for="user-name">Name</label>
+              <input type="text" id="user-name" required>
+            </div>
+            <div class="form-group">
+              <label for="user-role">Role</label>
+              <select id="user-role">
+                <option value="member">Member</option>
+                <option value="chapter-lead">Chapter Lead</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="user-status">Status</label>
+              <select id="user-status">
+                <option value="active">Active</option>
+                <option value="suspended">Suspended</option>
+              </select>
+            </div>
+            <button onclick="handleUserSubmit()">Save</button>
+            <button type="button" onclick="closeModal('userModal')">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Support Response Modal -->
+      <div id="supportModal" class="modal">
+        <div class="modal-content">
+          <span class="close" onclick="closeModal('supportModal')">×</span>
+          <h3>Respond to Support Request</h3>
+          <div id="supportForm">
+            <div class="form-group">
+              <label for="support-response">Response</label>
+              <textarea id="support-response" required></textarea>
+            </div>
+            <button onclick="handleSupportResponse()">Send Response</button>
+            <button type="button" onclick="closeModal('supportModal')">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tutorial Modal -->
+      <div id="tutorialModal" class="modal">
+        <div class="modal-content">
+          <span class="close" onclick="closeModal('tutorialModal')">×</span>
+          <h3>Tutorial</h3>
+          <div id="tutorialContent"></div>
+          <button type="button" onclick="closeModal('tutorialModal')">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { 
+      getAuth, 
+      onAuthStateChanged,
+      signOut,
+      createUserWithEmailAndPassword,
+      updateProfile
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      getDocs,
+      addDoc,
+      updateDoc,
+      deleteDoc,
+      doc,
+      query,
+      where,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID",
+      measurementId: "YOUR_MEASUREMENT_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const usersRef = collection(db, "users");
+    const supportRequestsRef = collection(db, "support_requests");
+    const tasksRef = collection(db, "tasks");
+    let currentUserId = null;
+    let currentSupportId = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          document.getElementById('userInfo').innerHTML = `Welcome, ${user.displayName || 'Admin'} | <span onclick="logout()" style="cursor: pointer;">Logout</span>`;
+          loadData();
+        } else {
+          window.location.href = 'login.html';
+        }
+      });
+      setupEventListeners();
+    });
+
+    function setupEventListeners() {
+      document.querySelectorAll('.sidebar a').forEach(a => {
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (a.textContent === 'Logout') {
+            logout();
+          } else {
+            showSection(a.getAttribute('onclick').replace("showSection('", "").replace("')", ""));
+          }
+        });
+      });
+
+      document.getElementById('taskFilter').addEventListener('change', (e) => {
+        document.getElementById('chapterFilter').style.display = e.target.value === 'chapter' ? 'inline-block' : 'none';
+      });
+    }
+
+    function showSection(sectionId) {
+      document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+      document.getElementById(sectionId).style.display = 'block';
+      document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
+      document.querySelector(`.sidebar a[onclick="showSection('${sectionId}')"]`).classList.add('active');
+    }
+
+    async function loadData() {
+      // Load Users
+      const usersSnapshot = await getDocs(usersRef);
+      const usersTable = document.getElementById('usersTable');
+      usersTable.innerHTML = '';
+      usersSnapshot.forEach(doc => {
+        const user = doc.data();
+        const row = usersTable.insertRow();
+        row.innerHTML = `
+          <td>${user.email}</td>
+          <td>${user.name}</td>
+          <td>${user.role}</td>
+          <td>${user.status}</td>
+          <td>
+            <button onclick="openUserModal('${doc.id}')">Edit</button>
+            <button onclick="deleteUser('${doc.id}')">Delete</button>
+          </td>`;
+      });
+
+      // Load Support Requests
+      const supportSnapshot = await getDocs(supportRequestsRef);
+      const supportTable = document.getElementById('supportTable');
+      supportTable.innerHTML = '';
+      supportSnapshot.forEach(doc => {
+        const request = doc.data();
+        const row = supportTable.insertRow();
+        row.innerHTML = `
+          <td>${request.email}</td>
+          <td>${request.subject}</td>
+          <td>${request.message}</td>
+          <td>${request.status || 'Pending'}</td>
+          <td>
+            ${request.status === 'Resolved' ? 'Resolved' : `<button onclick="openSupportModal('${doc.id}')">Respond</button>`}
+          </td>`;
+      });
+
+      // Load Tasks
+      const tasksSnapshot = await getDocs(tasksRef);
+      const tasksTable = document.getElementById('tasksTable');
+      tasksTable.innerHTML = '';
+      tasksSnapshot.forEach(doc => {
+        const task = doc.data();
+        const row = tasksTable.insertRow();
+        row.innerHTML = `
+          <td>${task.title}</td>
+          <td>${task.project || 'None'}</td>
+          <td>${task.dueDate || 'N/A'}</td>
+          <td>${task.completed ? 'Completed' : 'Pending'}</td>
+          <td>
+            <button onclick="flagTask('${doc.id}')">${task.flagged ? 'Unflag' : 'Flag'}</button>
+          </td>`;
+      });
+
+      // Load Moderation
+      const moderationTable = document.getElementById('moderationTable');
+      moderationTable.innerHTML = '';
+      tasksSnapshot.forEach(doc => {
+        const task = doc.data();
+        if (task.flagged) {
+          const row = moderationTable.insertRow();
+          row.innerHTML = `
+            <td>${task.title}</td>
+            <td>${task.description || 'N/A'}</td>
+            <td>${task.flagged ? 'Flagged' : 'Normal'}</td>
+            <td>
+              <button onclick="removeTask('${doc.id}')">Remove</button>
+              <button onclick="unflagTask('${doc.id}')">Unflag</button>
+            </td>`;
+        }
+      });
+    }
+
+    function openUserModal(userId = null) {
+      document.getElementById('userModal').style.display = 'block';
+      const modalTitle = document.getElementById('userModalTitle');
+      const emailInput = document.getElementById('user-email');
+      const nameInput = document.getElementById('user-name');
+      const roleInput = document.getElementById('user-role');
+      const statusInput = document.getElementById('user-status');
+      emailInput.disabled = !!userId;
+      currentUserId = userId;
+
+      if (userId) {
+        modalTitle.textContent = 'Edit User';
+        getDocs(query(usersRef, where('uid', '==', userId))).then(snapshot => {
+          snapshot.forEach(doc => {
+            const user = doc.data();
+            emailInput.value = user.email;
+            nameInput.value = user.name;
+            roleInput.value = user.role;
+            statusInput.value = user.status;
+          });
+        });
+      } else {
+        modalTitle.textContent = 'Add User';
+        emailInput.value = '';
+        nameInput.value = '';
+        roleInput.value = 'member';
+        statusInput.value = 'active';
+      }
+    }
+
+    async function handleUserSubmit() {
+      const email = document.getElementById('user-email').value;
+      const name = document.getElementById('user-name').value;
+      const role = document.getElementById('user-role').value;
+      const status = document.getElementById('user-status').value;
+
+      try {
+        if (currentUserId) {
+          const userDoc = doc(db, "users", currentUserId);
+          await updateDoc(userDoc, { name, role, status });
+        } else {
+          const userCredential = await createUserWithEmailAndPassword(auth, email, 'defaultPass123');
+          await updateProfile(userCredential.user, { displayName: name });
+          await addDoc(usersRef, {
+            email,
+            name,
+            role,
+            status,
+            uid: userCredential.user.uid,
+            createdAt: serverTimestamp()
+          });
+        }
+        closeModal('userModal');
+        loadData();
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+
+    async function deleteUser(userId) {
+      if (confirm('Are you sure you want to delete this user?')) {
+        await deleteDoc(doc(db, "users", userId));
+        loadData();
+      }
+    }
+
+    function openSupportModal(requestId) {
+      currentSupportId = requestId;
+      document.getElementById('supportModal').style.display = 'block';
+      document.getElementById('support-response').value = '';
+    }
+
+    async function handleSupportResponse() {
+      const response = document.getElementById('support-response').value;
+      if (!response) return alert('Please provide a response.');
+      await updateDoc(doc(db, "support_requests", currentSupportId), {
+        response,
+        status: 'Resolved',
+        resolvedAt: serverTimestamp()
+      });
+      closeModal('supportModal');
+      loadData();
+    }
+
+    async function filterTasks() {
+      const filter = document.getElementById('taskFilter').value;
+      const chapter = document.getElementById('chapterFilter').value;
+      let q = tasksRef;
+
+      if (filter === 'completed') {
+        q = query(tasksRef, where('completed', '==', true));
+      } else if (filter === 'pending') {
+        q = query(tasksRef, where('completed', '==', false));
+      } else if (filter === 'chapter' && chapter) {
+        q = query(tasksRef, where('chapter', '==', chapter));
+      }
+
+      const snapshot = await getDocs(q);
+      const tasksTable = document.getElementById('tasksTable');
+      tasksTable.innerHTML = '';
+      snapshot.forEach(doc => {
+        const task = doc.data();
+        const row = tasksTable.insertRow();
+        row.innerHTML = `
+          <td>${task.title}</td>
+          <td>${task.project || 'None'}</td>
+          <td>${task.dueDate || 'N/A'}</td>
+          <td>${task.completed ? 'Completed' : 'Pending'}</td>
+          <td>
+            <button onclick="flagTask('${doc.id}')">${task.flagged ? 'Unflag' : 'Flag'}</button>
+          </td>`;
+      });
+    }
+
+    async function flagTask(taskId) {
+      const taskDoc = doc(db, "tasks", taskId);
+      const task = (await getDocs(query(tasksRef, where('id', '==', taskId)))).docs[0]?.data();
+      const flagged = !task?.flagged;
+      await updateDoc(taskDoc, { flagged });
+      loadData();
+    }
+
+    async function unflagTask(taskId) {
+      await updateDoc(doc(db, "tasks", taskId), { flagged: false });
+      loadData();
+    }
+
+    async function removeTask(taskId) {
+      if (confirm('Are you sure you want to remove this task?')) {
+        await deleteDoc(doc(db, "tasks", taskId));
+        loadData();
+      }
+    }
+
+    async function generateReport() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const tasks = [];
+      const snapshot = await getDocs(tasksRef);
+      snapshot.forEach(doc => tasks.push({ ...doc.data(), id: doc.id }));
+      doc.autoTable({
+        head: [['Title', 'Project', 'Due Date', 'Status']],
+        body: tasks.map(t => [t.title, t.project || 'None', t.dueDate || 'N/A', t.completed ? 'Completed' : 'Pending']),
+        theme: 'grid',
+        headStyles: { fillColor: [255, 105, 180] },
+        alternateRowStyles: { fillColor: [255, 230, 240] }
+      });
+      doc.save('sca_task_report.pdf');
+    }
+
+    function openTutorial(type) {
+      const content = type === 'task-management'
+        ? 'Guide: Add tasks via the "+ Add Task" button. Set due dates and assign to projects...'
+        : 'Guide: Create projects in the sidebar. Categorize tasks under projects for better organization...';
+      document.getElementById('tutorialContent').innerHTML = `<p>${content}</p>`;
+      document.getElementById('tutorialModal').style.display = 'block';
+    }
+
+    function downloadResource() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.text('SCA Admin Manual', 10, 10);
+      doc.text('1. User Management: Add, edit, or suspend users...', 10, 20);
+      doc.text('2. Support Requests: Respond to user queries...', 10, 30);
+      doc.save('sca_admin_manual.pdf');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+    }
+
+    function logout() {
+      signOut(auth).then(() => window.location.href = 'login.html');
+    }
+
+    showSection('users');
+  </script>
+</body>
+</html>
