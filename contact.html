@@ -105,8 +105,7 @@
       <label for="message">Message:</label>
       <textarea id="message" name="message" rows="5" required></textarea>
 
-      <!-- Hidden fields for Formsubmit -->
-      <input type="hidden" name="_subject" value="New message from Streamline Contact Form!">
+       <input type="hidden" name="_subject" value="New message from Streamline Contact Form!">
       <input type="hidden" name="_captcha" value="false">
 
       <button type="submit">Send Message</button>
@@ -116,9 +115,7 @@
 
   <script>
     document.getElementById("contactForm").addEventListener("submit", function (event) {
-      event.preventDefault(); // Prevent default submission
-
-      // Simple client-side validation
+      event.preventDefault();   
       const name = document.getElementById("name").value.trim();
       const email = document.getElementById("email").value.trim();
       const message = document.getElementById("message").value.trim();
@@ -128,7 +125,6 @@
         return;
       }
 
-      // Send the form using FormSubmit
       fetch("https://formsubmit.co/ajax/uwayoolga@gmail.com", {
         method: "POST",
         headers: { 'Content-Type': 'application/json' },

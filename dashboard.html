@@ -6,8 +6,10 @@
   <title>Dashboard - Streamline</title>
   <link rel="icon" href="images/favicon.png" type="image/png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
   <style>
     * { 
       box-sizing: border-box; 
@@ -506,6 +508,7 @@
       margin-top: 8px;
       font-weight: 500;
       color: #c71585;
+      cursor: pointer;
     }
     
     .profile-menu {
@@ -618,13 +621,171 @@
     .report-button:hover {
       background-color: #3d8b40;
     }
+
+    /* Calendar styles */
+    .calendar-view {
+      display: none;
+      margin-top: 20px;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+
+    .view-toggle {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .view-toggle button {
+      background-color: #fff9fb;
+      border: 1px solid #ffd6e7;
+      color: #c71585;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .view-toggle button.active {
+      background-color: #ff69b4;
+      color: white;
+      border-color: #ff69b4;
+    }
+
+    .fc-event {
+      background-color: #ff69b4;
+      border-color: #e0559c;
+    }
+
+    .fc-event:hover {
+      background-color: #e0559c;
+    }
+
+    .fc-daygrid-event-dot {
+      border-color: white !important;
+    }
+
+    .fc-daygrid-event {
+      border-radius: 6px;
+    }
+
+    .fc-toolbar-title {
+      color: #c71585;
+      font-weight: 600;
+    }
+
+    .fc-button {
+      background-color: #ffe6f0 !important;
+      border-color: #ffc0cb !important;
+      color: #c71585 !important;
+    }
+
+    .fc-button:hover {
+      background-color: #ffd6e7 !important;
+    }
+
+    .fc-button-primary:not(:disabled).fc-button-active {
+      background-color: #ff69b4 !important;
+      border-color: #ff69b4 !important;
+      color: white !important;
+    }
+
+    .fc-day-today {
+      background-color: #fff5f9 !important;
+    }
+
+    /* Project actions */
+    .project-actions {
+      display: none;
+      margin-left: auto;
+    }
+
+    .project-item:hover .project-actions {
+      display: flex;
+      gap: 5px;
+    }
+
+    .project-action-btn {
+      background: none;
+      border: none;
+      color: #c71585;
+      cursor: pointer;
+      font-size: 12px;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .project-action-btn:hover {
+      opacity: 1;
+    }
+
+    /* Profile view modal */
+    .profile-view {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .profile-view-img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid #ff69b4;
+      margin-bottom: 15px;
+    }
+
+    .profile-view-info {
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    .profile-view-row {
+      display: flex;
+      margin-bottom: 10px;
+      padding: 10px;
+      background-color: #fff9fb;
+      border-radius: 8px;
+    }
+
+    .profile-view-label {
+      font-weight: 600;
+      color: #c71585;
+      min-width: 120px;
+    }
+
+    .profile-view-value {
+      flex: 1;
+      color: #666;
+    }
+
+    /* Confirmation modal */
+    .confirmation-modal {
+      text-align: center;
+    }
+
+    .confirmation-message {
+      margin-bottom: 20px;
+      color: #666;
+    }
+
+    .confirmation-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
   </style>
 </head>
 
 <body>
   <div class="sidebar">
-    <div class="logo">
-      <i class="fas fa-stream"></i> Streamline
+    <div class="logo">    <img src="images/favicon.png" alt="Company Logo" width="50" height="auto">
+
+      <i class=" "></i> Streamline
     </div>
     <a class="active" id="today-link"><i class="fas fa-calendar-day"></i> Today</a>
     <a id="upcoming-link"><i class="fas fa-calendar-week"></i> Upcoming</a>
@@ -637,10 +798,11 @@
     </div>
     <a id="add-project-link"><i class="fas fa-plus"></i> Add Project</a>
     <a onclick="confirmLogout()" style="margin-bottom: 15px;"><i class="fas fa-sign-out-alt"></i> Logout</a>
-    <div class="profile-section">
-      <img src="https://ui-avatars.com/api/?name=User&background=ff91c8&color=fff" alt="Profile" class="profile-icon" id="profileIcon" />
-      <div class="profile-name" id="profileName">User</div>
+    <div style="margin-bottom: 100px;" class="profile-section">
+      <img src="https://ui-avatars.com/api/?name=User&background=ff91c8&color=fff" alt="Profile" class="profile-icon" id="profileIcon" onclick="toggleProfileMenu()" />
+      <div class="profile-name" id="profileName" onclick="viewProfile()">User</div>
       <div class="profile-menu" id="profileMenu">
+        <button onclick="viewProfile()"><i class="fas fa-user"></i> View Profile</button>
         <button onclick="openProfileModal()"><i class="fas fa-user-edit"></i> Edit Profile</button>
         <button onclick="openSettingsModal()"><i class="fas fa-cog"></i> Settings</button>
         <button onclick="generateReport()"><i class="fas fa-file-pdf"></i> Generate Report</button>
@@ -677,6 +839,11 @@
         <button class="sort-button" data-sort="priority"><i class="fas fa-flag"></i> Priority</button>
       </div>
     </div>
+
+    <div class="view-toggle">
+      <button class="active" id="list-view-btn"><i class="fas fa-list"></i> List View</button>
+      <button id="calendar-view-btn"><i class="fas fa-calendar"></i> Calendar View</button>
+    </div>
     
     <div id="success-message">
       <i class="fas fa-check-circle"></i>
@@ -689,6 +856,7 @@
     </div>
     
     <div id="task-container"></div>
+    <div id="calendar" class="calendar-view"></div>
   </div>
 
   <!-- Task Form Modal -->
@@ -750,39 +918,68 @@
     </div>
   </div>
   
-<!-- Edit Profile Modal -->
-<div id="profileModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeProfileModal()">&times;</span>
-    <h2>Edit Profile</h2>
-    <form id="profileForm">
-      <div class="form-group">
-        <label for="profile-name">Display Name</label>
-        <input type="text" id="profile-name" required />
+  <!-- View Profile Modal -->
+  <div id="viewProfileModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeViewProfileModal()">&times;</span>
+      <h2>My Profile</h2>
+      <div class="profile-view">
+        <img src="" alt="Profile" class="profile-view-img" id="profileViewImg">
+        <div class="profile-view-info">
+          <div class="profile-view-row">
+            <div class="profile-view-label">Name:</div>
+            <div class="profile-view-value" id="profileViewName"></div>
+          </div>
+          <div class="profile-view-row">
+            <div class="profile-view-label">Email:</div>
+            <div class="profile-view-value" id="profileViewEmail"></div>
+          </div>
+          <div class="profile-view-row">
+            <div class="profile-view-label">Member Since:</div>
+            <div class="profile-view-value" id="profileViewCreated"></div>
+          </div>
+        </div>
       </div>
-      
-      <div class="form-group">
-        <label for="profile-email">Email</label>
-        <input type="email" id="profile-email" required />
-      </div>
-      
-      <div class="form-group">
-        <label for="profile-password">New Password (leave blank to keep current)</label>
-        <input type="password" id="profile-password" placeholder="Enter new password" />
-      </div>
-      
-      <div class="form-group">
-        <label for="profile-photo">Photo URL</label>
-        <input type="text" id="profile-photo" placeholder="Enter image URL" />
-      </div>
-      
       <div class="modal-buttons">
-        <button type="button" class="modal-button secondary" onclick="closeProfileModal()">Cancel</button>
-        <button type="submit" class="modal-button primary">Save Changes</button>
+        <button type="button" class="modal-button secondary" onclick="closeViewProfileModal()">Close</button>
+        <button type="button" class="modal-button primary" onclick="openProfileModal()">Edit Profile</button>
       </div>
-    </form>
+    </div>
   </div>
-</div>
+  
+  <!-- Edit Profile Modal -->
+  <div id="profileModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeProfileModal()">&times;</span>
+      <h2>Edit Profile</h2>
+      <form id="profileForm">
+        <div class="form-group">
+          <label for="profile-name">Display Name</label>
+          <input type="text" id="profile-name" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="profile-email">Email</label>
+          <input type="email" id="profile-email" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="profile-password">New Password (leave blank to keep current)</label>
+          <input type="password" id="profile-password" placeholder="Enter new password" />
+        </div>
+        
+        <div class="form-group">
+          <label for="profile-photo">Photo URL</label>
+          <input type="text" id="profile-photo" placeholder="Enter image URL" />
+        </div>
+        
+        <div class="modal-buttons">
+          <button type="button" class="modal-button secondary" onclick="closeProfileModal()">Cancel</button>
+          <button type="submit" class="modal-button primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
   
   <!-- Settings Modal -->
   <div id="settingsModal" class="modal">
@@ -814,11 +1011,11 @@
     </div>
   </div>
   
-  <!-- Add Project Modal -->
+  <!-- Add/Edit Project Modal -->
   <div id="projectModal" class="modal">
     <div class="modal-content">
       <span class="close" onclick="closeProjectModal()">&times;</span>
-      <h2>Add New Project</h2>
+      <h2 id="project-form-title">Add New Project</h2>
       <form id="projectForm">
         <div class="form-group">
           <label for="project-name">Project Name*</label>
@@ -839,60 +1036,30 @@
         
         <div class="modal-buttons">
           <button type="button" class="modal-button secondary" onclick="closeProjectModal()">Cancel</button>
-          <button type="submit" class="modal-button primary">Create Project</button>
+          <button type="submit" class="modal-button primary" id="project-submit-btn">
+            <span id="project-submit-text">Create Project</span>
+          </button>
         </div>
       </form>
     </div>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { 
-      getAuth, 
-      onAuthStateChanged,
-      signOut,
-      updateProfile,
-      updateEmail,
-      updatePassword,
-      EmailAuthProvider,
-      reauthenticateWithCredential
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import {
-      getFirestore,
-      collection,
-      addDoc,
-      onSnapshot,
-      updateDoc,
-      doc,
-      deleteDoc,
-      query,
-      where,
-      orderBy,
-      serverTimestamp,
-      setDoc,
-      getDoc
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  <!-- Delete Confirmation Modal -->
+  <div id="confirmModal" class="modal">
+    <div class="modal-content" style="max-width: 400px;">
+      <span class="close" onclick="closeConfirmModal()">&times;</span>
+      <h2>Confirm Action</h2>
+      <div class="confirmation-modal">
+        <p class="confirmation-message" id="confirmMessage">Are you sure you want to delete this project?</p>
+        <div class="confirmation-buttons">
+          <button type="button" class="modal-button secondary" onclick="closeConfirmModal()">Cancel</button>
+          <button type="button" class="modal-button primary" id="confirmActionBtn">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    // Firebase configuration and initialization
-    const firebaseConfig = {
-      apiKey: "AIzaSyA_iYY1cpnwjW4idgEmpVScj3SecxN2Qss",
-      authDomain: "todolistwebapp-eb8cb.firebaseapp.com",
-      projectId: "todolistwebapp-eb8cb",
-      storageBucket: "todolistwebapp-eb8cb.appspot.com",
-      messagingSenderId: "869793857380",
-      appId: "1:869793857380:web:79b4a200e73bae6c088471",
-      measurementId: "G-7LX95XNM4M"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    
-    // References to collections
-    const tasksRef = collection(db, "tasks");
-    const projectsRef = collection(db, "projects");
-    const usersRef = collection(db, "users");
-    
+  <script>
     // DOM elements
     const taskContainer = document.getElementById('task-container');
     const emptyState = document.getElementById('emptyState');
@@ -903,17 +1070,31 @@
     const profileIcon = document.getElementById('profileIcon');
     const profileName = document.getElementById('profileName');
     const projectsList = document.getElementById('projects-list');
+    const calendarEl = document.getElementById('calendar');
+    const listViewBtn = document.getElementById('list-view-btn');
+    const calendarViewBtn = document.getElementById('calendar-view-btn');
     
     // State variables
-    let allTasks = [];
-    let allProjects = [];
+    let allTasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    let allProjects = JSON.parse(localStorage.getItem('projects')) || [];
     let currentView = 'today';
     let currentFilter = 'all';
     let currentSort = 'dueDate';
     let currentSearch = '';
     let editingTaskId = null;
     let editingProjectId = null;
+    let calendar;
+    let confirmAction = null;
     
+    // User profile data (stored in localStorage for persistence)
+   let userProfile = JSON.parse(localStorage.getItem('userProfile')) || {
+  displayName: localStorage.getItem('userName')  ,
+  email: localStorage.getItem('userEmail')  ,
+  photoURL: localStorage.getItem('userPhoto')  ,
+  password: '',
+  createdAt: localStorage.getItem('userCreated') || new Date().toISOString()
+};
+
     // Initialize the app
     document.addEventListener('DOMContentLoaded', () => {
       // Set up event listeners
@@ -922,64 +1103,172 @@
       // Set today's date as default in task form
       document.getElementById('task-date').valueAsDate = new Date();
       
-      // Check auth state
-      onAuthStateChanged(auth, (user) => {
-        if (user) {
-          // User is signed in
-          loadUserProfile(user);
-          
-          // Load data
-          loadTasks();
-          loadProjects();
-        } else {
-          // User is signed out
-          window.location.href = 'login.html';
-        }
-      });
+      // Load initial data
+      loadInitialData();
+      
+      // Load user profile
+      loadUserProfile();
+      
+      // Initialize calendar
+      initCalendar();
     });
     
-    // Load user profile from Firestore
-    async function loadUserProfile(user) {
-      try {
-        const userDocRef = doc(db, "users", user.uid);
-        const userDoc = await getDoc(userDocRef);
-        
-        if (userDoc.exists()) {
-          // User profile exists in Firestore
-          const userData = userDoc.data();
-          updateProfileUI(user, userData);
-        } else {
-          // Create new user profile in Firestore
-          const newUserProfile = {
-            displayName: user.displayName || 'User',
-            email: user.email || '',
-            photoURL: user.photoURL || '',
-            createdAt: serverTimestamp(),
-            lastUpdated: serverTimestamp()
-          };
+    // Initialize FullCalendar
+    function initCalendar() {
+      calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,dayGridWeek,listWeek'
+        },
+        events: [],
+        eventClick: function(info) {
+          editTask(info.event.id);
+        },
+        eventContent: function(arg) {
+          // Custom event rendering
+          const priorityDot = document.createElement('div');
+          priorityDot.className = 'priority-dot';
+          priorityDot.classList.add(`dot-${arg.event.extendedProps.priority}`);
           
-          await setDoc(userDocRef, newUserProfile);
-          updateProfileUI(user, newUserProfile);
+          const eventTitle = document.createElement('div');
+          eventTitle.innerText = arg.event.title;
+          eventTitle.style.marginLeft = '5px';
+          
+          const eventContent = document.createElement('div');
+          eventContent.style.display = 'flex';
+          eventContent.style.alignItems = 'center';
+          eventContent.appendChild(priorityDot);
+          eventContent.appendChild(eventTitle);
+          
+          return { domNodes: [eventContent] };
         }
-      } catch (error) {
-        console.error("Error loading user profile:", error);
-        // Fallback to auth profile if Firestore fails
-        updateProfileUI(user);
+      });
+      calendar.render();
+    }
+    
+    // Update calendar with tasks
+    function updateCalendar() {
+      const events = allTasks.map(task => ({
+        id: task.id,
+        title: task.title,
+        start: task.date,
+        allDay: true,
+        extendedProps: {
+          priority: task.priority || 'medium',
+          description: task.desc || ''
+        },
+        backgroundColor: getPriorityColor(task.priority),
+        borderColor: getPriorityBorderColor(task.priority),
+        textColor: '#ffffff'
+      }));
+      
+      calendar.removeAllEvents();
+      calendar.addEventSource(events);
+    }
+    
+    function getPriorityColor(priority) {
+      switch(priority) {
+        case 'high': return '#f44336';
+        case 'medium': return '#ff9800';
+        case 'low': return '#4caf50';
+        default: return '#ff69b4';
       }
     }
     
-    // Update profile UI
-    function updateProfileUI(user, userData = null) {
-      const displayName = userData?.displayName || user.displayName || 'User';
-      const photoURL = userData?.photoURL || user.photoURL;
+    function getPriorityBorderColor(priority) {
+      switch(priority) {
+        case 'high': return '#d32f2f';
+        case 'medium': return '#f57c00';
+        case 'low': return '#388e3c';
+        default: return '#e0559c';
+      }
+    }
+    
+    // Toggle between list and calendar views
+    function toggleView(view) {
+      if (view === 'list') {
+        taskContainer.style.display = 'block';
+        calendarEl.style.display = 'none';
+        listViewBtn.classList.add('active');
+        calendarViewBtn.classList.remove('active');
+      } else {
+        taskContainer.style.display = 'none';
+        calendarEl.style.display = 'block';
+        listViewBtn.classList.remove('active');
+        calendarViewBtn.classList.add('active');
+        updateCalendar();
+      }
+    }
+    
+    // Load initial data (tasks and projects)
+    function loadInitialData() {
+      // Load tasks from localStorage
+      allTasks = JSON.parse(localStorage.getItem('tasks')) || [];
       
-      profileName.textContent = displayName;
-      profileIcon.src = photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=ff91c8&color=fff`;
+      // Load projects from localStorage
+      allProjects = JSON.parse(localStorage.getItem('projects')) || [];
+      
+      renderTasks();
+      renderProjects();
+      updateProjectDropdown();
+    }
+    
+    // Load user profile from localStorage
+    function loadUserProfile() {
+      profileName.textContent = userProfile.displayName;
+      profileIcon.src = userProfile.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(userProfile.displayName)}&background=ff91c8&color=fff`;
       
       // Populate profile form
-      document.getElementById('profile-name').value = displayName;
-      document.getElementById('profile-email').value = user.email || '';
-      document.getElementById('profile-photo').value = photoURL || '';
+      document.getElementById('profile-name').value = userProfile.displayName;
+      document.getElementById('profile-email').value = userProfile.email;
+      document.getElementById('profile-photo').value = userProfile.photoURL;
+    }
+    
+    // Update profile UI
+    function updateProfileUI() {
+      profileName.textContent = userProfile.displayName;
+      profileIcon.src = userProfile.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(userProfile.displayName)}&background=ff91c8&color=fff`;
+      
+      // Update profile view modal
+      document.getElementById('profileViewName').textContent = userProfile.displayName;
+      document.getElementById('profileViewEmail').textContent = userProfile.email;
+      document.getElementById('profileViewImg').src = userProfile.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(userProfile.displayName)}&background=ff91c8&color=fff`;
+      
+      // Format and display creation date
+      const createdAt = userProfile.createdAt ? new Date(userProfile.createdAt) : new Date();
+      document.getElementById('profileViewCreated').textContent = createdAt.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+      
+      // Save to localStorage
+      localStorage.setItem('userProfile', JSON.stringify(userProfile));
+    }
+    
+    // View profile details
+    function viewProfile() {
+      document.getElementById('profileViewName').textContent = userProfile.displayName;
+      document.getElementById('profileViewEmail').textContent = userProfile.email;
+      document.getElementById('profileViewImg').src = userProfile.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(userProfile.displayName)}&background=ff91c8&color=fff`;
+      
+      // Format and display creation date
+      const createdAt = userProfile.createdAt ? new Date(userProfile.createdAt) : new Date();
+      document.getElementById('profileViewCreated').textContent = createdAt.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+      
+      document.getElementById('viewProfileModal').style.display = 'block';
+      toggleProfileMenu();
+    }
+    
+    // Close view profile modal
+    function closeViewProfileModal() {
+      document.getElementById('viewProfileModal').style.display = 'none';
     }
     
     // Set up event listeners
@@ -990,6 +1279,10 @@
       document.getElementById('completed-link').addEventListener('click', () => setView('completed', 'Completed'));
       document.getElementById('all-link').addEventListener('click', () => setView('all', 'All Tasks'));
       document.getElementById('add-project-link').addEventListener('click', openProjectModal);
+      
+      // View toggle buttons
+      listViewBtn.addEventListener('click', () => toggleView('list'));
+      calendarViewBtn.addEventListener('click', () => toggleView('calendar'));
       
       // Filter and sort buttons
       document.querySelectorAll('.filter-button').forEach(btn => {
@@ -1033,34 +1326,10 @@
             if (modal.id === 'profileModal') closeProfileModal();
             if (modal.id === 'settingsModal') closeSettingsModal();
             if (modal.id === 'projectModal') closeProjectModal();
+            if (modal.id === 'viewProfileModal') closeViewProfileModal();
+            if (modal.id === 'confirmModal') closeConfirmModal();
           }
         });
-      });
-    }
-    
-    // Load tasks from Firestore
-    function loadTasks() {
-      const q = query(tasksRef, orderBy('created', 'desc'));
-      
-      onSnapshot(q, (snapshot) => {
-        allTasks = snapshot.docs.map(doc => ({ 
-          id: doc.id, 
-          ...doc.data(),
-          // Convert Firestore Timestamp to Date if needed
-          date: doc.data().date?.toDate ? formatDate(doc.data().date.toDate()) : doc.data().date,
-          created: doc.data().created?.toDate ? doc.data().created.toDate() : doc.data().created
-        }));
-        
-        renderTasks();
-      });
-    }
-    
-    // Load projects from Firestore
-    function loadProjects() {
-      onSnapshot(projectsRef, (snapshot) => {
-        allProjects = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        renderProjects();
-        updateProjectDropdown();
       });
     }
     
@@ -1069,14 +1338,42 @@
       projectsList.innerHTML = '';
       
       allProjects.forEach(project => {
-        const projectLink = document.createElement('a');
-        projectLink.innerHTML = `
+        const projectItem = document.createElement('div');
+        projectItem.className = 'project-item';
+        projectItem.style.display = 'flex';
+        projectItem.style.alignItems = 'center';
+        projectItem.style.padding = '10px 12px';
+        projectItem.style.borderRadius = '8px';
+        projectItem.style.cursor = 'pointer';
+        projectItem.style.transition = 'background-color 0.3s';
+        projectItem.style.position = 'relative';
+        
+        projectItem.innerHTML = `
           <span class="project-color" style="background-color: ${project.color}"></span>
-          ${project.name}
+          <span style="flex: 1;">${project.name}</span>
+          <div class="project-actions">
+            <button class="project-action-btn" onclick="editProject('${project.id}', event)">
+              <i class="far fa-edit"></i>
+            </button>
+            <button class="project-action-btn" onclick="confirmDeleteProject('${project.id}', event)">
+              <i class="far fa-trash-alt"></i>
+            </button>
+          </div>
         `;
-        projectLink.addEventListener('click', () => filterByProject(project.id));
-        projectsList.appendChild(projectLink);
+        
+        projectItem.addEventListener('click', () => filterByProject(project.id));
+        projectItem.addEventListener('mouseenter', () => {
+          projectItem.style.backgroundColor = '#ffd6e7';
+        });
+        projectItem.addEventListener('mouseleave', () => {
+          projectItem.style.backgroundColor = '';
+        });
+        
+        projectsList.appendChild(projectItem);
       });
+      
+      // Save projects to localStorage
+      localStorage.setItem('projects', JSON.stringify(allProjects));
     }
     
     // Filter tasks by project
@@ -1095,7 +1392,7 @@
         projectSelect.remove(1);
       }
       
-      // Add projects from Firestore
+      // Add projects from memory
       allProjects.forEach(project => {
         const option = document.createElement('option');
         option.value = project.id;
@@ -1157,6 +1454,9 @@
         const taskCard = createTaskCard(task);
         taskContainer.appendChild(taskCard);
       });
+      
+      // Save tasks to localStorage
+      localStorage.setItem('tasks', JSON.stringify(allTasks));
     }
     
     // Filter tasks by current view
@@ -1312,7 +1612,7 @@
     }
     
     // Handle task form submission
-    async function handleTaskSubmit(e) {
+    function handleTaskSubmit(e) {
       e.preventDefault();
       
       const submitBtn = document.getElementById('task-submit-btn');
@@ -1336,24 +1636,32 @@
             ? document.getElementById('task-tags').value.split(',').map(tag => tag.trim())
             : [],
           status: 'pending',
-          created: serverTimestamp(),
-          userId: auth.currentUser.uid
+          created: new Date()
         };
         
         if (editingTaskId) {
           // Update existing task
-          await updateDoc(doc(db, 'tasks', editingTaskId), taskData);
+          const taskIndex = allTasks.findIndex(t => t.id === editingTaskId);
+          if (taskIndex !== -1) {
+            allTasks[taskIndex] = { ...allTasks[taskIndex], ...taskData };
+          }
           showSuccess('Task updated successfully!');
         } else {
           // Add new task
-          await addDoc(tasksRef, taskData);
+          const newTask = {
+            ...taskData,
+            id: Date.now().toString()
+          };
+          allTasks.unshift(newTask);
           showSuccess('Task added successfully!');
         }
         
         closeTaskForm();
         e.target.reset();
+        renderTasks();
+        updateCalendar();
       } catch (error) {
-        alert('Error saving task: ' + error.message);
+        showError('Error saving task: ' + error.message);
       } finally {
         // Reset button state
         submitText.textContent = editingTaskId ? 'Update Task' : 'Save Task';
@@ -1364,11 +1672,12 @@
     }
     
     // Toggle task status (complete/incomplete)
-    async function toggleTaskStatus(taskId, isCompleted) {
+    function toggleTaskStatus(taskId, isCompleted) {
       try {
-        await updateDoc(doc(db, 'tasks', taskId), {
-          status: isCompleted ? 'completed' : 'pending'
-        });
+        const taskIndex = allTasks.findIndex(t => t.id === taskId);
+        if (taskIndex !== -1) {
+          allTasks[taskIndex].status = isCompleted ? 'completed' : 'pending';
+        }
         
         const taskCard = document.querySelector(`.task-card[data-task-id="${taskId}"]`);
         if (taskCard) {
@@ -1382,8 +1691,11 @@
             }, 500);
           }
         }
+        
+        renderTasks();
+        updateCalendar();
       } catch (error) {
-        alert('Error updating task status: ' + error.message);
+        showError('Error updating task status: ' + error.message);
       }
     }
     
@@ -1411,90 +1723,138 @@
     }
     
     // Delete task
-    async function deleteTask(taskId) {
-      const confirmDelete = confirm('Are you sure you want to delete this task?');
-      if (!confirmDelete) return;
-      
-      try {
-        await deleteDoc(doc(db, 'tasks', taskId));
-        showSuccess('Task deleted successfully!');
-      } catch (error) {
-        alert('Error deleting task: ' + error.message);
-      }
+    function deleteTask(taskId) {
+      showConfirmModal(
+        'Are you sure you want to delete this task?',
+        () => {
+          try {
+            allTasks = allTasks.filter(task => task.id !== taskId);
+            showSuccess('Task deleted successfully!');
+            renderTasks();
+            updateCalendar();
+          } catch (error) {
+            showError('Error deleting task: ' + error.message);
+          }
+        }
+      );
     }
     
     // Handle profile update
-    async function handleProfileUpdate(e) {
+    function handleProfileUpdate(e) {
       e.preventDefault();
       
-      const user = auth.currentUser;
-      if (!user) return;
-      
       try {
-        const displayName = document.getElementById('profile-name').value;
-        const email = document.getElementById('profile-email').value;
-        const password = document.getElementById('profile-password').value;
-        const photoURL = document.getElementById('profile-photo').value;
+        // Update profile in memory
+        userProfile.displayName = document.getElementById('profile-name').value;
+        userProfile.email = document.getElementById('profile-email').value;
+        userProfile.photoURL = document.getElementById('profile-photo').value;
         
-        // Update profile in Firestore
-        const userDocRef = doc(db, "users", user.uid);
-        await updateDoc(userDocRef, {
-          displayName,
-          email,
-          photoURL: photoURL || null,
-          lastUpdated: serverTimestamp()
-        });
-        
-        // Update auth profile
-        await updateProfile(user, {
-          displayName,
-          photoURL: photoURL || null
-        });
-        
-        // Update email if changed
-        if (email !== user.email) {
-          await updateEmail(user, email);
-        }
-        
-        // Update password if provided
-        if (password) {
-          await updatePassword(user, password);
+        const newPassword = document.getElementById('profile-password').value;
+        if (newPassword) {
+          userProfile.password = newPassword;
         }
         
         // Update UI
-        updateProfileUI(user);
+        updateProfileUI();
         
         showSuccess('Profile updated successfully!');
         closeProfileModal();
       } catch (error) {
-        if (error.code === 'auth/requires-recent-login') {
-          alert('Please reauthenticate to update sensitive information.');
-          // Here you could implement a reauthentication flow
-        } else {
-          alert('Error updating profile: ' + error.message);
-        }
+        showError('Error updating profile: ' + error.message);
       }
     }
     
-    // Handle project creation
-    async function handleProjectSubmit(e) {
+    // Edit project
+    function editProject(projectId, event) {
+      event.stopPropagation();
+      
+      const project = allProjects.find(p => p.id === projectId);
+      if (!project) return;
+      
+      editingProjectId = projectId;
+      
+      // Fill the form with project data
+      document.getElementById('project-name').value = project.name;
+      document.getElementById('project-color').value = project.color;
+      
+      // Update form title
+      document.getElementById('project-form-title').textContent = 'Edit Project';
+      document.getElementById('project-submit-text').textContent = 'Update Project';
+      
+      openProjectModal();
+    }
+    
+    // Confirm project deletion
+    function confirmDeleteProject(projectId, event) {
+      event.stopPropagation();
+      
+      const project = allProjects.find(p => p.id === projectId);
+      if (!project) return;
+      
+      // Check if there are tasks associated with this project
+      const hasTasks = allTasks.some(task => task.project === projectId);
+      
+      if (hasTasks) {
+        showError('Cannot delete project with associated tasks. Please move or delete the tasks first.');
+        return;
+      }
+      
+      showConfirmModal(
+        `Are you sure you want to delete the project "${project.name}"?`,
+        () => {
+          try {
+            allProjects = allProjects.filter(p => p.id !== projectId);
+            showSuccess('Project deleted successfully!');
+            renderProjects();
+            updateProjectDropdown();
+            
+            // If we were viewing this project, switch to "All Tasks" view
+            if (currentView === 'project' && currentFilter === projectId) {
+              setView('all', 'All Tasks');
+            }
+          } catch (error) {
+            showError('Error deleting project: ' + error.message);
+          }
+        }
+      );
+    }
+    
+    // Handle project form submission
+    function handleProjectSubmit(e) {
       e.preventDefault();
       
       try {
         const projectData = {
           name: document.getElementById('project-name').value,
           color: document.getElementById('project-color').value,
-          createdAt: serverTimestamp(),
-          userId: auth.currentUser.uid
+          createdAt: new Date()
         };
         
-        await addDoc(projectsRef, projectData);
+        if (editingProjectId) {
+          // Update existing project
+          const projectIndex = allProjects.findIndex(p => p.id === editingProjectId);
+          if (projectIndex !== -1) {
+            allProjects[projectIndex] = { ...allProjects[projectIndex], ...projectData };
+          }
+          showSuccess('Project updated successfully!');
+        } else {
+          // Add new project
+          const newProject = {
+            ...projectData,
+            id: Date.now().toString()
+          };
+          allProjects.push(newProject);
+          showSuccess('Project created successfully!');
+        }
         
-        showSuccess('Project created successfully!');
         closeProjectModal();
         e.target.reset();
+        renderProjects();
+        updateProjectDropdown();
       } catch (error) {
-        alert('Error creating project: ' + error.message);
+        showError('Error saving project: ' + error.message);
+      } finally {
+        editingProjectId = null;
       }
     }
     
@@ -1511,7 +1871,7 @@
     }
     
     // Generate PDF report
-    async function generateReport() {
+    function generateReport() {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
       
@@ -1523,8 +1883,7 @@
       // User info
       doc.setFontSize(12);
       doc.setTextColor(0, 0, 0);
-      const user = auth.currentUser;
-      doc.text(`Generated by: ${user.displayName || 'User'}`, 14, 30);
+      doc.text(`Generated by: ${userProfile.displayName || 'User'}`, 14, 30);
       doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 37);
       
       // Filter tasks for report
@@ -1577,11 +1936,44 @@
     // Show success message
     function showSuccess(message) {
       successText.textContent = message;
+      successMessage.style.backgroundColor = '#d4edda';
+      successMessage.style.color = '#155724';
       successMessage.classList.add('show');
       
       setTimeout(() => {
         successMessage.classList.remove('show');
       }, 3000);
+    }
+    
+    // Show error message
+    function showError(message) {
+      successText.textContent = message;
+      successMessage.style.backgroundColor = '#f8d7da';
+      successMessage.style.color = '#721c24';
+      successMessage.classList.add('show');
+      
+      setTimeout(() => {
+        successMessage.classList.remove('show');
+      }, 3000);
+    }
+    
+    // Show confirmation modal
+    function showConfirmModal(message, callback) {
+      document.getElementById('confirmMessage').textContent = message;
+      document.getElementById('confirmModal').style.display = 'block';
+      
+      // Set up confirm button
+      const confirmBtn = document.getElementById('confirmActionBtn');
+      confirmBtn.onclick = () => {
+        callback();
+        closeConfirmModal();
+      };
+    }
+    
+    // Close confirmation modal
+    function closeConfirmModal() {
+      document.getElementById('confirmModal').style.display = 'none';
+      document.getElementById('confirmActionBtn').onclick = null;
     }
     
     // Format date for display
@@ -1643,11 +2035,14 @@
     
     function openProjectModal() {
       document.getElementById('projectModal').style.display = 'block';
+      document.getElementById('project-form-title').textContent = editingProjectId ? 'Edit Project' : 'Add New Project';
+      document.getElementById('project-submit-text').textContent = editingProjectId ? 'Update Project' : 'Create Project';
     }
     
     function closeProjectModal() {
       document.getElementById('projectModal').style.display = 'none';
       document.getElementById('projectForm').reset();
+      editingProjectId = null;
     }
     
     // Profile menu toggle
@@ -1665,23 +2060,21 @@
     
     // Confirm logout
     function confirmLogout() {
-      if (confirm('Are you sure you want to logout?')) {
-        logout();
-      }
+      showConfirmModal('Are you sure you want to logout?', logout);
     }
     
     // Logout function
     function logout() {
-      signOut(auth).then(() => {
-        window.location.href = 'login.html';
-      }).catch((error) => {
-        alert('Error logging out: ' + error.message);
-      });
+      // In a real app, this would sign out from Firebase
+      // For this demo, we'll just redirect to login page
+      window.location.href = 'login.html';
     }
     
     // Make functions available globally
     window.openTaskForm = openTaskForm;
     window.closeTaskForm = closeTaskForm;
+    window.viewProfile = viewProfile;
+    window.closeViewProfileModal = closeViewProfileModal;
     window.openProfileModal = openProfileModal;
     window.closeProfileModal = closeProfileModal;
     window.openSettingsModal = openSettingsModal;
@@ -1693,6 +2086,8 @@
     window.confirmLogout = confirmLogout;
     window.saveSettings = saveSettings;
     window.generateReport = generateReport;
+    window.editProject = editProject;
+    window.confirmDeleteProject = confirmDeleteProject;
     
     // Theme selection
     document.querySelectorAll('.theme-option').forEach(option => {
@@ -1701,7 +2096,6 @@
         option.classList.add('active');
       });
     });
-    
   </script>
 </body>
 </html>

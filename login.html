@@ -51,6 +51,7 @@
       width: 100%;
       max-width: 400px;
       padding-top: 10px;
+      position: relative;
     }
 
     h2 {
@@ -100,6 +101,48 @@
       color: #c71585;
       text-decoration: underline;
     }
+ 
+    .success-message {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #4BB543;
+      color: white;
+      padding: 15px 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+
+    .success-message.show {
+      opacity: 1;
+    }
+
+    .success-message::before {
+      content: "✓";
+      margin-right: 10px;
+      font-size: 20px;
+    }
+ 
+    .spinner {
+      display: none;
+      width: 40px;
+      height: 40px;
+      margin: 0 auto;
+      border: 4px solid rgba(255, 105, 180, 0.3);
+      border-radius: 50%;
+      border-top-color: #ff69b4;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
@@ -118,7 +161,8 @@
       <label for="login-password">Password:</label>
       <input type="password" id="login-password" name="password" required />
 
-      <button type="submit">Login</button>
+      <button type="submit" id="loginButton">Login</button>
+      <div class="spinner" id="spinner"></div>
     </form>
     <div style="margin: 7px; font-size: 15px;">
       By logging in, you agree to our 
@@ -128,6 +172,10 @@
     <div class="link">
       <a href="signup.html">Don't have an account? Sign up</a>
     </div>
+  </div>
+
+  <div class="success-message" id="successMessage">
+    Login successful! Redirecting...
   </div>
  
   <script type="module">
@@ -147,19 +195,39 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-     const loginForm = document.getElementById("loginForm");
+    const loginForm = document.getElementById("loginForm");
+    const successMessage = document.getElementById("successMessage");
+    const loginButton = document.getElementById("loginButton");
+    const spinner = document.getElementById("spinner");
+
     loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
       const email = document.getElementById("login-email").value.trim();
       const password = document.getElementById("login-password").value;
 
+      // Show loading spinner and disable button
+      loginButton.style.display = 'none';
+      spinner.style.display = 'block';
+
       try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        alert("Login successful!");
-        window.location.href = "dashboard.html"; 
+        
+        // Show success message
+        successMessage.classList.add('show');
+        
+        // Redirect after a short delay
+        setTimeout(() => {
+          window.location.href = "dashboard.html"; 
+        }, 1500);
+        
       } catch (error) {
+        // Show error message (you could create a similar UI for errors)
         alert("Login failed: " + error.message);
+        
+        // Reset button and spinner
+        loginButton.style.display = 'block';
+        spinner.style.display = 'none';
       }
     });
   </script>

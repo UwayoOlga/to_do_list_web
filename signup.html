@@ -41,6 +41,7 @@
       width: 100%;
       max-width: 400px;
       padding-top: 10px;
+      position: relative;
     }
 
     h2 {
@@ -100,6 +101,77 @@
       margin-right: 5px;  
       margin-top: -14px;
     }
+ 
+    .notification {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 15px 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+      color: white;
+    }
+
+    .notification.show {
+      opacity: 1;
+    }
+
+    .notification::before {
+      margin-right: 10px;
+      font-size: 20px;
+    }
+
+    .success {
+      background-color: #4BB543;
+    }
+
+    .success::before {
+      content: "✓";
+    }
+
+    .error {
+      background-color: #ff3333;
+    }
+
+    .error::before {
+      content: "✗";
+    }
+
+     .spinner {
+      display: none;
+      width: 40px;
+      height: 40px;
+      margin: 0 auto;
+      border: 4px solid rgba(255, 105, 180, 0.3);
+      border-radius: 50%;
+      border-top-color: #ff69b4;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+ 
+    .password-match {
+      font-size: 12px;
+      margin-top: -10px;
+      margin-bottom: 15px;
+      height: 14px;
+    }
+
+    .match {
+      color: #4BB543;
+    }
+
+    .no-match {
+      color: #ff3333;
+    }
   </style>
 </head>
 <body>
@@ -122,14 +194,22 @@
 
       <label for="signup-confirm">Confirm Password:</label>
       <input type="password" id="signup-confirm" name="confirm" minlength="6" required />
+      <div class="password-match" id="passwordMatch"></div>
 
-      <button type="submit">Sign Up</button>
+      <button type="submit" id="signupButton">Sign Up</button>
+      <div class="spinner" id="spinner"></div>
     </form>
 
     <div class="link">
       <a href="login.html">Already have an account? Login</a>
     </div>
   </div>
+
+  <div class="notification success" id="successMessage">
+    Account created successfully! Redirecting...
+  </div>
+
+  <div class="notification error" id="errorMessage"></div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -149,8 +229,31 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+ 
+    const signupForm = document.getElementById("signupForm");
+    const successMessage = document.getElementById("successMessage");
+    const errorMessage = document.getElementById("errorMessage");
+    const signupButton = document.getElementById("signupButton");
+    const spinner = document.getElementById("spinner");
+    const passwordMatch = document.getElementById("passwordMatch");
+    const passwordInput = document.getElementById("signup-password");
+    const confirmInput = document.getElementById("signup-confirm");
+ 
+    confirmInput.addEventListener('input', () => {
+      if (passwordInput.value && confirmInput.value) {
+        if (passwordInput.value === confirmInput.value) {
+          passwordMatch.textContent = "Passwords match!";
+          passwordMatch.className = "password-match match";
+        } else {
+          passwordMatch.textContent = "Passwords do not match!";
+          passwordMatch.className = "password-match no-match";
+        }
+      } else {
+        passwordMatch.textContent = "";
+      }
+    });
 
-    document.getElementById("signupForm").addEventListener("submit", async (e) => {
+    signupForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
       const name = document.getElementById("signup-name").value.trim();
@@ -158,8 +261,13 @@
       const password = document.getElementById("signup-password").value;
       const confirm = document.getElementById("signup-confirm").value;
 
+       signupButton.style.display = 'none';
+      spinner.style.display = 'block';
+
       if (password !== confirm) {
-        alert("Passwords do not match!");
+        showError("Passwords do not match!");
+        signupButton.style.display = 'block';
+        spinner.style.display = 'none';
         return;
       }
 
@@ -168,17 +276,37 @@
         const user = userCredential.user;
 
         await setDoc(doc(db, "users", user.uid), {
+          userId: user.uid,
           name: name,
           email: email,
           createdAt: new Date()
         });
 
-        alert("Sign up successful!");
-        window.location.href = "login.html";
+        showSuccess();
+        setTimeout(() => {
+          window.location.href = "login.html";
+        }, 1500);
       } catch (error) {
-        alert("Error: " + error.message);
+        showError(error.message);
+        signupButton.style.display = 'block';
+        spinner.style.display = 'none';
       }
     });
+
+    function showSuccess() {
+      successMessage.classList.add('show');
+      errorMessage.classList.remove('show');
+    }
+
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorMessage.classList.add('show');
+      successMessage.classList.remove('show');
+       
+      setTimeout(() => {
+        errorMessage.classList.remove('show');
+      }, 5000);
+    }
   </script>
 </body>
 </html>
