@@ -5,15 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Streamline | Welcome</title>
   <link rel="icon" href="images/favicon.png" type="image/png">
+ 
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
-      font-family: "Times New Roman", Times, serif;
+      font-family: 'Times New Roman', Times, serif;
       background: linear-gradient(to bottom, #ffe6f0, #fff);
       color: #c71585;
+      overflow: hidden;
     }
- 
+
     nav {
       background-color: #fff;
       display: flex;
@@ -21,6 +27,7 @@
       justify-content: space-between;
       align-items: center;
       padding: 20px 10%;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
     }
 
     .logo {
@@ -30,16 +37,14 @@
       flex: 1;
     }
 
-    .nav-links,
-    .nav-buttons {
+    .nav-links, .nav-buttons {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 10px;
+      gap: 15px;
     }
 
-    .nav-links a,
-    .nav-buttons a {
+    .nav-links a, .nav-buttons a {
       color: #c71585;
       text-decoration: none;
       font-weight: bold;
@@ -52,7 +57,7 @@
     .nav-buttons a {
       padding: 10px 18px;
       border: 2px solid #ff69b4;
-      border-radius: 6px;
+      border-radius: 8px;
       transition: all 0.3s ease;
     }
 
@@ -60,38 +65,51 @@
       background-color: #ff69b4;
       color: white;
     }
- 
+
     .hero {
-      text-align: center;
-      padding: 60px 20px 40px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      padding: 60px 10%;
+      background-image: url('images/pink-bg.png'); /* replace with actual pink background */
+      background-size: cover;
+      background-position: center;
+    }
+
+    .hero-text {
+      flex: 1;
+      text-align: left;
+      animation: fadeIn 2s ease-out;
     }
 
     .hero h1 {
-      font-size: 2.5rem;
+      font-size: 3rem;
       margin-bottom: 20px;
     }
 
     .hero p {
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       color: #b03060;
-      max-width: 600px;
-      margin: 0 auto 40px;
+      margin-bottom: 40px;
+      max-width: 500px;
     }
 
     .hero-buttons {
       display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
       gap: 20px;
+      flex-wrap: wrap;
     }
 
     .hero-buttons a {
-      padding: 14px 24px;
+      padding: 14px 28px;
       border-radius: 8px;
       text-decoration: none;
       font-size: 1rem;
       font-weight: bold;
       transition: all 0.3s ease;
+      box-shadow: 0 6px 12px rgba(255,105,180,0.3);
     }
 
     .get-started {
@@ -106,103 +124,92 @@
     .download {
       border: 2px solid #ff69b4;
       color: #c71585;
+      background-color: white;
     }
 
     .download:hover {
       background-color: #ffe6f0;
     }
 
+    .hero-image {
+      flex: 1;
+      max-width: 500px;
+      animation: float 3s ease-in-out infinite; 
+    }
+
+    .hero-image img {
+      width: 100%;
+      height: auto;
+    }
+
     footer {
       text-align: center;
       font-size: 14px;
       color: #c71585;
-      padding: 20px;
+      padding: 40px 20px;
+      margin-top: 100px;
     }
- 
+
+    /* Animations */
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
     @media (max-width: 768px) {
-      nav {
+      .hero {
         flex-direction: column;
-        align-items: flex-start;
-        padding: 20px;
-      }
-
-      .logo {
-        margin-bottom: 10px;
-      }
-
-      .nav-links,
-      .nav-buttons {
-        flex-direction: column;
-        align-items: flex-start;
-        width: 100%;
-      }
-
-      .nav-links a,
-      .nav-buttons a {
-        width: 100%;
-        padding: 10px 0;
-      }
-
-      .hero h1 {
-        font-size: 2rem;
-      }
-
-      .hero p {
-        font-size: 1rem;
-      }
-
-      .hero-buttons a {
-        width: 80%;
         text-align: center;
       }
-    }
 
-    @media (max-width: 480px) {
-      .hero h1 {
-        font-size: 1.75rem;
-      }
-
-      .hero p {
-        font-size: 0.95rem;
+      .hero-text, .hero-image {
+        max-width: 100%;
       }
 
       .hero-buttons {
-        gap: 10px;
-      }
-
-      .hero-buttons a {
-        font-size: 0.95rem;
-        padding: 12px 18px;
+        justify-content: center;
       }
     }
   </style>
 </head>
 <body>
- 
+
   <nav>
-    <img src="images/favicon.png" alt="Company Logo" width="30" height="auto">
+    <img src="images/favicon.png" alt="Logo" width="30">
     <div class="logo">Streamline</div>
-    <div class="nav-links"> 
+    <div class="nav-links">
       <a href="download.html">Demo</a>
       <a href="about.html">About</a>
-      <a href="contact.html">Contact</a>
+      <a style="padding-right: 5px;" href="contact.html">Contact</a>
     </div>
     <div class="nav-buttons">
-      <a href="login.html" style="margin: 10px;">Sign In</a>
+      <a href="login.html">Sign In</a>
       <a href="signup.html">Sign Up</a>
     </div>
   </nav>
- 
-  <div class="hero">
-    <h1>Stay Organized, Stay Creative.</h1>
-    <p>Join a community of planners who capture ideas, organize tasks, and get things done beautifully with Streamline.</p>
-    <div class="hero-buttons">
-      <a href="signup.html" class="get-started">Get Started</a>
-      <a href="download.html" class="download">Watch Demo</a>
-    </div>
-  </div>
 
-  <footer style="margin-top: 200px;">&copy; 2025 Streamline. Built to Simplify Your Life.</footer>
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Stay Organized, Stay Creative.</h1>
+      <p>Join a community of planners who capture ideas, organize tasks, and get things done beautifully with Streamline.</p>
+      <div class="hero-buttons">
+        <a href="signup.html" class="get-started">Get Started</a>
+        <a href="download.html" class="download">Watch Demo</a>
+      </div>
+    </div>
+    <div class="hero-image">
+      <img src="images/pic2.jpg" style="border-radius: 20px;"> <!-- Use your image here -->
+    </div>
+  </section>
+
+  <footer style="padding-top: 10px;">
+    &copy; 2025 Streamline. Built to Simplify Your Life.
+  </footer>
 
 </body>
 </html>

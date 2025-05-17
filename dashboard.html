@@ -644,7 +644,7 @@
         <button onclick="openProfileModal()"><i class="fas fa-user-edit"></i> Edit Profile</button>
         <button onclick="openSettingsModal()"><i class="fas fa-cog"></i> Settings</button>
         <button onclick="generateReport()"><i class="fas fa-file-pdf"></i> Generate Report</button>
-        <button onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        <button onclick="confirmLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
       </div>
     </div>
   </div>
@@ -868,7 +868,9 @@
       query,
       where,
       orderBy,
-      serverTimestamp
+      serverTimestamp,
+      setDoc,
+      getDoc
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     // Firebase configuration and initialization
@@ -889,6 +891,7 @@
     // References to collections
     const tasksRef = collection(db, "tasks");
     const projectsRef = collection(db, "projects");
+    const usersRef = collection(db, "users");
     
     // DOM elements
     const taskContainer = document.getElementById('task-container');
@@ -923,7 +926,7 @@
       onAuthStateChanged(auth, (user) => {
         if (user) {
           // User is signed in
-          updateProfileUI(user);
+          loadUserProfile(user);
           
           // Load data
           loadTasks();
@@ -935,15 +938,48 @@
       });
     });
     
+    // Load user profile from Firestore
+    async function loadUserProfile(user) {
+      try {
+        const userDocRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userDocRef);
+        
+        if (userDoc.exists()) {
+          // User profile exists in Firestore
+          const userData = userDoc.data();
+          updateProfileUI(user, userData);
+        } else {
+          // Create new user profile in Firestore
+          const newUserProfile = {
+            displayName: user.displayName || 'User',
+            email: user.email || '',
+            photoURL: user.photoURL || '',
+            createdAt: serverTimestamp(),
+            lastUpdated: serverTimestamp()
+          };
+          
+          await setDoc(userDocRef, newUserProfile);
+          updateProfileUI(user, newUserProfile);
+        }
+      } catch (error) {
+        console.error("Error loading user profile:", error);
+        // Fallback to auth profile if Firestore fails
+        updateProfileUI(user);
+      }
+    }
+    
     // Update profile UI
-    function updateProfileUI(user) {
-      profileName.textContent = user.displayName || 'User';
-      profileIcon.src = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'User')}&background=ff91c8&color=fff`;
+    function updateProfileUI(user, userData = null) {
+      const displayName = userData?.displayName || user.displayName || 'User';
+      const photoURL = userData?.photoURL || user.photoURL;
+      
+      profileName.textContent = displayName;
+      profileIcon.src = photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=ff91c8&color=fff`;
       
       // Populate profile form
-      document.getElementById('profile-name').value = user.displayName || '';
+      document.getElementById('profile-name').value = displayName;
       document.getElementById('profile-email').value = user.email || '';
-      document.getElementById('profile-photo').value = user.photoURL || '';
+      document.getElementById('profile-photo').value = photoURL || '';
     }
     
     // Set up event listeners
@@ -1157,10 +1193,10 @@
       // Search filter
       if (currentSearch) {
         filtered = filtered.filter(task => 
-  task.title.toLowerCase().includes(currentSearch) || 
-  (task.desc && task.desc.toLowerCase().includes(currentSearch)) || // Added comma here
-  (task.tags && task.tags.some(tag => tag.toLowerCase().includes(currentSearch)))
-)
+          task.title.toLowerCase().includes(currentSearch) || 
+          (task.desc && task.desc.toLowerCase().includes(currentSearch)) ||
+          (task.tags && task.tags.some(tag => tag.toLowerCase().includes(currentSearch)))
+        );
       }
       
       return filtered;
@@ -1400,7 +1436,16 @@
         const password = document.getElementById('profile-password').value;
         const photoURL = document.getElementById('profile-photo').value;
         
-        // Update profile info
+        // Update profile in Firestore
+        const userDocRef = doc(db, "users", user.uid);
+        await updateDoc(userDocRef, {
+          displayName,
+          email,
+          photoURL: photoURL || null,
+          lastUpdated: serverTimestamp()
+        });
+        
+        // Update auth profile
         await updateProfile(user, {
           displayName,
           photoURL: photoURL || null
@@ -1618,6 +1663,13 @@
       }
     });
     
+    // Confirm logout
+    function confirmLogout() {
+      if (confirm('Are you sure you want to logout?')) {
+        logout();
+      }
+    }
+    
     // Logout function
     function logout() {
       signOut(auth).then(() => {
@@ -1638,6 +1690,7 @@
     window.closeProjectModal = closeProjectModal;
     window.toggleProfileMenu = toggleProfileMenu;
     window.logout = logout;
+    window.confirmLogout = confirmLogout;
     window.saveSettings = saveSettings;
     window.generateReport = generateReport;
     
