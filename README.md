@@ -1,7 +1,7 @@
-#Streamline Dashboard
+# Streamline Dashboard
 
 A web-based task management dashboard for organizing tasks and projects with a clean, user-friendly interface.
-##Features
+## Features
 
 -Task creation, editing, and deletion
 -Project management with color coding
@@ -11,7 +11,7 @@ A web-based task management dashboard for organizing tasks and projects with a c
 -User profile management
 -Responsive design
 
-##Technologies Used
+## Technologies Used
 
 -HTML5: Structure and markup
 -CSS3: Styling and responsive design
@@ -22,13 +22,13 @@ A web-based task management dashboard for organizing tasks and projects with a c
 -Deployment: Netlify
 -Database: Firebase
 
-##Getting Started
+## Getting Started
 
 Clone the repository or download the source code.
-Open index.html in a web browser.
+Open ```index.html``` in a web browser.
 Start managing tasks and projects!
 
-##Usage
+## Usage
 
 Use the sidebar to navigate between Today, Upcoming, Completed, and All Tasks views.
 Add tasks via the "Add Task" button.
