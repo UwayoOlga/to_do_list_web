@@ -126,6 +126,7 @@
     .empty-state img { 
       width: 180px; 
       opacity: 0.7; 
+      margin-bottom: -30px;
     }
     
     .empty-state p { 
@@ -419,6 +420,7 @@
       align-items: center;
       gap: 6px;
       transition: all 0.3s;
+      margin-bottom: 5px;
     }
     
     .filter-button:hover, .sort-button:hover {
@@ -448,7 +450,7 @@
       
       .logo {
         width: 100%;
-        margin-bottom: 10px;
+        margin-bottom: 10px; 
       }
       
       .sidebar h4 {
@@ -729,6 +731,61 @@
       align-items: center;
       padding: 20px;
     }
+    /* Add these styles to your existing CSS */
+
+/* Calendar view improvements */
+.fc-daygrid-day-frame {
+  min-height: 60px;
+}
+
+.fc-daygrid-day-events {
+  margin-top: 4px;
+}
+
+.fc-daygrid-event {
+  margin: 1px 2px;
+  padding: 2px 4px;
+  font-size: 12px;
+}
+
+.fc-daygrid-day-number {
+  font-weight: bold;
+  color: #c71585;
+}
+
+.fc-day-today .fc-daygrid-day-number {
+  color: #fff;
+  background-color: #ff69b4;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2px;
+}
+
+.fc-daygrid-day.fc-day-today {
+  background-color: #fff5f9;
+}
+
+.fc-daygrid-event-dot {
+  display: none;
+}
+
+/* Due tasks styling */
+.due-task {
+  border-left: 4px solid #f44336;
+}
+
+.task-due-label {
+  background-color: #f44336;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  margin-left: 8px;
+}
 
     .profile-view-img {
       width: 100px;
@@ -781,20 +838,21 @@
   </style>
 </head>
 
-<body>
+<body style="height: 400px;">
   <div class="sidebar">
-    <div class="logo">
-      <i class="fas fa-stream"></i> Streamline
+    <div class="logo" > <img src="images/favicon.png" alt="Company Logo" width="50" height="auto" style="margin-right: -4px;">
+      <i></i> Streamline
     </div>
     <a class="active" id="today-link"><i class="fas fa-calendar-day"></i> Today</a>
     <a id="upcoming-link"><i class="fas fa-calendar-week"></i> Upcoming</a>
     <a id="completed-link"><i class="fas fa-check-circle"></i> Completed</a>
+    <a id="due-link"><i class="fas fa-exclamation-circle"></i> Due Tasks</a>
+
     <a id="all-link"><i class="fas fa-tasks"></i> All Tasks</a>
     
     <h4><i class="fas fa-folder"></i> My Projects</h4>
     <div id="projects-list">
-      <!-- Projects will be dynamically added here -->
-    </div>
+     </div>
     <a id="add-project-link"><i class="fas fa-plus"></i> Add Project</a>
     <a onclick="confirmLogout()" style="margin-bottom: 15px;"><i class="fas fa-sign-out-alt"></i> Logout</a>
     <div class="profile-section">
@@ -857,8 +915,7 @@
     <div id="task-container"></div>
     <div id="calendar" class="calendar-view"></div>
   </div>
-
-  <!-- Task Form Modal -->
+ 
   <div id="taskFormModal" class="modal">
     <div class="modal-content">
       <span class="close" onclick="closeTaskForm()">&times;</span>
@@ -901,8 +958,7 @@
         <div class="form-group">
           <label for="task-project">Project</label>
           <select id="task-project">
-            <option value="">None</option>
-            <!-- Projects will be dynamically added here -->
+            <option value="">None</option> 
           </select>
         </div>
         
@@ -916,8 +972,7 @@
       </form>
     </div>
   </div>
-  
-  <!-- View Profile Modal -->
+   >
   <div id="viewProfileModal" class="modal">
     <div class="modal-content">
       <span class="close" onclick="closeViewProfileModal()">&times;</span>
@@ -945,8 +1000,7 @@
       </div>
     </div>
   </div>
-  
-  <!-- Edit Profile Modal -->
+   
   <div id="profileModal" class="modal">
     <div class="modal-content">
       <span class="close" onclick="closeProfileModal()">&times;</span>
@@ -979,8 +1033,7 @@
       </form>
     </div>
   </div>
-  
-  <!-- Settings Modal -->
+   
   <div id="settingsModal" class="modal">
     <div class="modal-content">
       <span class="close" onclick="closeSettingsModal()">&times;</span>
@@ -1009,8 +1062,7 @@
       </div>
     </div>
   </div>
-  
-  <!-- Add/Edit Project Modal -->
+   
   <div id="projectModal" class="modal">
     <div class="modal-content">
       <span class="close" onclick="closeProjectModal()">&times;</span>
@@ -1042,8 +1094,7 @@
       </form>
     </div>
   </div>
-
-  <!-- Delete Confirmation Modal -->
+ 
   <div id="confirmModal" class="modal">
     <div class="modal-content" style="max-width: 400px;">
       <span class="close" onclick="closeConfirmModal()">&times;</span>
@@ -1059,12 +1110,11 @@
   </div>
 
   <script type="module">
-    // Import Firebase modules
+     
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut, updateProfile, updateEmail, updatePassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
     import { getFirestore, collection, doc, setDoc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-
-    // Firebase configuration
+ 
     const firebaseConfig = {
       apiKey: "AIzaSyA_iYY1cpnwjW4idgEmpVScj3SecxN2Qss",
       authDomain: "todolistwebapp-eb8cb.firebaseapp.com",
@@ -1074,13 +1124,11 @@
       appId: "1:869793857380:web:79b4a200e73bae6c088471",
       measurementId: "G-7LX95XNM4M"
     };
-
-    // Initialize Firebase
+ 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-
-    // DOM elements
+ 
     const taskContainer = document.getElementById('task-container');
     const emptyState = document.getElementById('emptyState');
     const pageTitle = document.getElementById('page-title');
@@ -1093,8 +1141,7 @@
     const calendarEl = document.getElementById('calendar');
     const listViewBtn = document.getElementById('list-view-btn');
     const calendarViewBtn = document.getElementById('calendar-view-btn');
-    
-    // State variables
+     
     let currentUser = null;
     let allTasks = [];
     let allProjects = [];
@@ -1106,19 +1153,14 @@
     let editingProjectId = null;
     let calendar;
     let confirmAction = null;
-    
-    // Initialize the app
+     
     document.addEventListener('DOMContentLoaded', () => {
-      // Set up event listeners
-      setupEventListeners();
-      
-      // Set today's date as default in task form
+       setupEventListeners();
+       
       document.getElementById('task-date').valueAsDate = new Date();
-      
-      // Initialize calendar
+       
       initCalendar();
-      
-      // Check auth state
+       
       onAuthStateChanged(auth, (user) => {
         if (user) {
           currentUser = user;
@@ -1129,61 +1171,84 @@
         }
       });
     });
-    
-    // Initialize FullCalendar
+     
     function initCalendar() {
-      calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        headerToolbar: {
-          left: 'prev,next today',
-          center: 'title',
-          right: 'dayGridMonth,dayGridWeek,listWeek'
-        },
-        events: [],
-        eventClick: function(info) {
-          editTask(info.event.id);
-        },
-        eventContent: function(arg) {
-          // Custom event rendering
-          const priorityDot = document.createElement('div');
-          priorityDot.className = 'priority-dot';
-          priorityDot.classList.add(`dot-${arg.event.extendedProps.priority}`);
-          
-          const eventTitle = document.createElement('div');
-          eventTitle.innerText = arg.event.title;
-          eventTitle.style.marginLeft = '5px';
-          
-          const eventContent = document.createElement('div');
-          eventContent.style.display = 'flex';
-          eventContent.style.alignItems = 'center';
-          eventContent.appendChild(priorityDot);
-          eventContent.appendChild(eventTitle);
-          
-          return { domNodes: [eventContent] };
-        }
-      });
-      calendar.render();
-    }
-    
-    // Update calendar with tasks
-    function updateCalendar() {
-      const events = allTasks.map(task => ({
-        id: task.id,
-        title: task.title,
-        start: task.date,
-        allDay: true,
-        extendedProps: {
-          priority: task.priority || 'medium',
-          description: task.desc || ''
-        },
-        backgroundColor: getPriorityColor(task.priority),
-        borderColor: getPriorityBorderColor(task.priority),
-        textColor: '#ffffff'
-      }));
+  calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'dayGridMonth,dayGridWeek,listWeek'
+    },
+    events: [],
+    eventClick: function(info) {
+      editTask(info.event.id);
+    },
+    eventContent: function(arg) {
+       const eventDiv = document.createElement('div');
+      eventDiv.style.display = 'flex';
+      eventDiv.style.alignItems = 'center';
+      eventDiv.style.padding = '2px 4px';
       
-      calendar.removeAllEvents();
-      calendar.addEventSource(events);
+      const priorityDot = document.createElement('div');
+      priorityDot.className = 'priority-dot';
+      priorityDot.classList.add(`dot-${arg.event.extendedProps.priority}`);
+      priorityDot.style.marginRight = '6px';
+      
+      const eventTitle = document.createElement('div');
+      eventTitle.textContent = arg.event.title;
+      eventTitle.style.overflow = 'hidden';
+      eventTitle.style.textOverflow = 'ellipsis';
+      eventTitle.style.whiteSpace = 'nowrap';
+      
+      eventDiv.appendChild(priorityDot);
+      eventDiv.appendChild(eventTitle);
+      
+      return { domNodes: [eventDiv] };
+    },
+    dayCellContent: function(arg) {
+       
+      const date = arg.date.getDate();
+      const dateEl = document.createElement('div');
+      dateEl.textContent = date;
+      dateEl.style.textAlign = 'center';
+      dateEl.style.fontWeight = 'bold';
+      dateEl.style.marginBottom = '4px';
+      return { domNodes: [dateEl] };
+    },
+    eventDidMount: function(arg) {
+       
+      arg.el.setAttribute('title', 
+        `${arg.event.title}\nPriority: ${arg.event.extendedProps.priority}\n${arg.event.extendedProps.description || ''}`
+      );
     }
+  });
+  calendar.render();
+}
+
+     
+    function updateCalendar() {
+  const events = allTasks.map(task => ({
+    id: task.id,
+    title: task.title,
+    start: task.date,
+    allDay: true,
+    extendedProps: {
+      priority: task.priority || 'medium',
+      description: task.desc || ''
+    },
+    backgroundColor: getPriorityColor(task.priority),
+    borderColor: getPriorityBorderColor(task.priority),
+    textColor: '#ffffff'
+  }));
+  
+  calendar.removeAllEvents();
+  calendar.addEventSource(events);
+   
+  calendar.updateSize();
+}
+ 
+document.getElementById('due-link').addEventListener('click', () => setView('due', 'Due Tasks'));
     
     function getPriorityColor(priority) {
       switch(priority) {
@@ -1202,8 +1267,7 @@
         default: return '#e0559c';
       }
     }
-    
-    // Toggle between list and calendar views
+     
     function toggleView(view) {
       if (view === 'list') {
         taskContainer.style.display = 'block';
@@ -1218,11 +1282,9 @@
         updateCalendar();
       }
     }
-    
-    // Load initial data (tasks and projects)
+     
     function loadInitialData() {
-      // Load tasks for current user
-      const tasksQuery = query(
+       const tasksQuery = query(
         collection(db, 'tasks'),
         where('userId', '==', currentUser.uid)
       );
@@ -1234,8 +1296,7 @@
         });
         renderTasks();
       });
-      
-      // Load projects for current user
+       
       const projectsQuery = query(
         collection(db, 'projects'),
         where('userId', '==', currentUser.uid)
@@ -1250,8 +1311,7 @@
         updateProjectDropdown();
       });
     }
-    
-    // Load user profile from Firebase
+     
     async function loadUserProfile() {
       try {
         const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
@@ -1259,19 +1319,16 @@
           const userData = userDoc.data();
           profileName.textContent = userData.displayName || currentUser.displayName || 'User';
           profileIcon.src = userData.photoURL || currentUser.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.displayName || currentUser.email)}&background=ff91c8&color=fff`;
-          
-          // Populate profile form
+           
           document.getElementById('profile-name').value = userData.displayName || currentUser.displayName || '';
           document.getElementById('profile-email').value = currentUser.email;
           document.getElementById('profile-photo').value = userData.photoURL || '';
-          
-          // Update profile view modal
+           
           document.getElementById('profileViewName').textContent = userData.displayName || currentUser.displayName || currentUser.email;
           document.getElementById('profileViewEmail').textContent = currentUser.email;
           document.getElementById('profileViewImg').src = userData.photoURL || currentUser.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.displayName || currentUser.email)}&background=ff91c8&color=fff`;
           
-          // Format and display creation date
-          const createdAt = userData.createdAt ? new Date(userData.createdAt.seconds * 1000) : new Date(currentUser.metadata.creationTime);
+           const createdAt = userData.createdAt ? new Date(userData.createdAt.seconds * 1000) : new Date(currentUser.metadata.creationTime);
           document.getElementById('profileViewCreated').textContent = createdAt.toLocaleDateString('en-US', { 
             year: 'numeric', 
             month: 'long', 
@@ -1283,32 +1340,26 @@
         showError('Error loading profile data');
       }
     }
-    
-    // View profile details
+     
     function viewProfile() {
       document.getElementById('viewProfileModal').style.display = 'block';
       toggleProfileMenu();
     }
-    
-    // Close view profile modal
+     
     function closeViewProfileModal() {
       document.getElementById('viewProfileModal').style.display = 'none';
     }
     
-    // Set up event listeners
-    function setupEventListeners() {
-      // Navigation links
-      document.getElementById('today-link').addEventListener('click', () => setView('today', 'Today'));
+     function setupEventListeners() {
+       document.getElementById('today-link').addEventListener('click', () => setView('today', 'Today'));
       document.getElementById('upcoming-link').addEventListener('click', () => setView('upcoming', 'Upcoming'));
       document.getElementById('completed-link').addEventListener('click', () => setView('completed', 'Completed'));
       document.getElementById('all-link').addEventListener('click', () => setView('all', 'All Tasks'));
       document.getElementById('add-project-link').addEventListener('click', openProjectModal);
-      
-      // View toggle buttons
+       
       listViewBtn.addEventListener('click', () => toggleView('list'));
       calendarViewBtn.addEventListener('click', () => toggleView('calendar'));
-      
-      // Filter and sort buttons
+       
       document.querySelectorAll('.filter-button').forEach(btn => {
         btn.addEventListener('click', () => {
           document.querySelectorAll('.filter-button').forEach(b => b.classList.remove('active'));
@@ -1326,23 +1377,18 @@
           renderTasks();
         });
       });
-      
-      // Search input
+       
       searchInput.addEventListener('input', (e) => {
         currentSearch = e.target.value.toLowerCase();
         renderTasks();
       });
-      
-      // Task form submission
+       
       document.getElementById('taskForm').addEventListener('submit', handleTaskSubmit);
-      
-      // Profile form submission
+       
       document.getElementById('profileForm').addEventListener('submit', handleProfileUpdate);
-      
-      // Project form submission
+       
       document.getElementById('projectForm').addEventListener('submit', handleProjectSubmit);
-      
-      // Click outside modals to close
+       
       document.querySelectorAll('.modal').forEach(modal => {
         modal.addEventListener('click', (e) => {
           if (e.target === modal) {
@@ -1356,8 +1402,7 @@
         });
       });
     }
-    
-    // Render projects in sidebar
+     
     function renderProjects() {
       projectsList.innerHTML = '';
       
@@ -1396,62 +1441,51 @@
         projectsList.appendChild(projectItem);
       });
     }
-    
-    // Filter tasks by project
+     
     function filterByProject(projectId) {
       currentView = 'project';
       currentFilter = projectId;
       pageTitle.textContent = allProjects.find(p => p.id === projectId)?.name || 'Project';
       renderTasks();
     }
-    
-    // Update project dropdown in task form
+     
     function updateProjectDropdown() {
       const projectSelect = document.getElementById('task-project');
-      // Clear existing options except the first "None" option
+       
       while (projectSelect.options.length > 1) {
         projectSelect.remove(1);
       }
-      
-      // Add projects from memory
+       
+    
       allProjects.forEach(project => {
         const option = document.createElement('option');
         option.value = project.id;
         option.textContent = project.name;
         projectSelect.appendChild(option);
       });
-    }
-    
-    // Set current view (today, upcoming, completed, all)
+    } 
     function setView(view, title) {
-      currentView = view;
-      pageTitle.textContent = title;
-      
-      // Update active nav link
-      document.querySelectorAll('.sidebar a').forEach(link => link.classList.remove('active'));
-      document.getElementById(`${view}-link`).classList.add('active');
-      
-      renderTasks();
-    }
-    
-    // Render tasks based on current view, filter, sort, and search
+  currentView = view;
+  pageTitle.textContent = title;
+       
+     document.querySelectorAll('.sidebar a').forEach(link => link.classList.remove('active'));
+  document.getElementById(`${view}-link`).classList.add('active');
+  
+  renderTasks();
+}
+ 
     function renderTasks() {
       taskContainer.innerHTML = '';
-      
-      // Filter tasks based on current view
+       
       let filteredTasks = filterTasksByView(allTasks, currentView);
-      
-      // Apply additional filters
+       
       filteredTasks = applyAdditionalFilters(filteredTasks);
-      
-      // Sort tasks
+       
       filteredTasks = sortTasks(filteredTasks, currentSort);
-      
-      // Show empty state if no tasks
+       
       if (filteredTasks.length === 0) {
         emptyState.style.display = 'block';
-        
-        // Customize empty state message based on view
+         
         let message = 'No tasks found.';
         if (currentSearch) {
           message = `No tasks match "${currentSearch}".`;
@@ -1469,46 +1503,48 @@
       } else {
         emptyState.style.display = 'none';
       }
-      
-      // Create task cards
+       
       filteredTasks.forEach(task => {
         const taskCard = createTaskCard(task);
         taskContainer.appendChild(taskCard);
       });
     }
     
-    // Filter tasks by current view
+     
     function filterTasksByView(tasks, view) {
-      const today = new Date().toISOString().split('T')[0];
-      const now = new Date();
-      
-      switch(view) {
-        case 'today':
-          return tasks.filter(task => task.date === today && task.status !== 'completed');
-        case 'upcoming':
-          return tasks.filter(task => {
-            const taskDate = new Date(task.date);
-            return taskDate > now && task.status !== 'completed';
-          });
-        case 'completed':
-          return tasks.filter(task => task.status === 'completed');
-        case 'project':
-          return tasks.filter(task => task.project === currentFilter);
-        default:
-          return tasks;
-      }
-    }
-    
-    // Apply additional filters (priority, search)
+  const today = new Date().toISOString().split('T')[0];
+  const now = new Date();
+  
+  switch(view) {
+    case 'today':
+      return tasks.filter(task => task.date === today && task.status !== 'completed');
+    case 'upcoming':
+      return tasks.filter(task => {
+        const taskDate = new Date(task.date);
+        return taskDate > now && task.status !== 'completed';
+      });
+    case 'due':
+      return tasks.filter(task => {
+        const taskDate = new Date(task.date);
+        return taskDate < now && task.status !== 'completed';
+      });
+    case 'completed':
+      return tasks.filter(task => task.status === 'completed');
+    case 'project':
+      return tasks.filter(task => task.project === currentFilter);
+    default:
+      return tasks;
+  }
+}
+
+     
     function applyAdditionalFilters(tasks) {
       let filtered = [...tasks];
-      
-      // Priority filter
+       
       if (currentFilter !== 'all' && currentView !== 'project') {
         filtered = filtered.filter(task => task.priority === currentFilter);
       }
-      
-      // Search filter
+       
       if (currentSearch) {
         filtered = filtered.filter(task => 
           task.title.toLowerCase().includes(currentSearch) || 
@@ -1519,8 +1555,7 @@
       
       return filtered;
     }
-    
-    // Sort tasks
+     
     function sortTasks(tasks, sortBy) {
       const sorted = [...tasks];
       
@@ -1534,14 +1569,19 @@
           return sorted;
       }
     }
-    
-    // Create a task card element
+     
     function createTaskCard(task) {
       const card = document.createElement('div');
       card.className = `task-card ${task.status === 'completed' ? 'completed-task' : ''}`;
       card.dataset.taskId = task.id;
-      
-      // Task info section
+      const today = new Date();
+  const taskDate = new Date(task.date);
+  if (taskDate < today && task.status !== 'completed') {
+    card.classList.add('due-task');
+  }
+  
+  card.dataset.taskId = task.id;
+       
       const info = document.createElement('div');
       info.className = 'task-info';
       
@@ -1558,16 +1598,20 @@
       dueDate.innerHTML = `<i class="far fa-calendar-alt" style="color: #c71585; margin-right: 5px;"></i>Due: ${formatDisplayDate(task.date)}`;
       
       meta.appendChild(dueDate);
-      
-      // Priority tag
+       if (taskDate < today && task.status !== 'completed') {
+    const dueLabel = document.createElement('span');
+    dueLabel.className = 'task-due-label';
+    dueLabel.textContent = 'Due';
+    meta.appendChild(dueLabel);
+  }
+       
       if (task.priority) {
         const priority = document.createElement('span');
         priority.className = `task-priority priority-${task.priority}`;
         priority.innerHTML = `<i class="fas fa-flag" style="margin-right: 3px;"></i>${task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}`;
         meta.appendChild(priority);
       }
-      
-      // Project tag
+       
       if (task.project) {
         const project = document.createElement('span');
         project.className = 'task-tag';
@@ -1577,8 +1621,7 @@
           meta.appendChild(project);
         }
       }
-      
-      // Tags
+       
       if (task.tags && task.tags.length > 0) {
         task.tags.forEach(tag => {
           const tagElement = document.createElement('span');
@@ -1591,8 +1634,7 @@
       info.appendChild(title);
       info.appendChild(desc);
       info.appendChild(meta);
-      
-      // Task actions section
+       
       const actions = document.createElement('div');
       actions.className = 'task-actions';
       
@@ -1628,16 +1670,14 @@
       
       return card;
     }
-    
-    // Handle task form submission
+     
     async function handleTaskSubmit(e) {
       e.preventDefault();
       
       const submitBtn = document.getElementById('task-submit-btn');
       const submitText = document.getElementById('submit-btn-text');
       const submitSpinner = document.getElementById('submit-btn-spinner');
-      
-      // Show loading state
+       
       submitText.textContent = 'Saving...';
       submitSpinner.style.display = 'inline-block';
       submitBtn.disabled = true;
@@ -1659,11 +1699,11 @@
         };
         
         if (editingTaskId) {
-          // Update existing task
+           
           await updateDoc(doc(db, 'tasks', editingTaskId), taskData);
           showSuccess('Task updated successfully!');
         } else {
-          // Add new task
+           
           await addDoc(collection(db, 'tasks'), taskData);
           showSuccess('Task added successfully!');
         }
@@ -1674,15 +1714,14 @@
       } catch (error) {
         showError('Error saving task: ' + error.message);
       } finally {
-        // Reset button state
+         
         submitText.textContent = editingTaskId ? 'Update Task' : 'Save Task';
         submitSpinner.style.display = 'none';
         submitBtn.disabled = false;
         editingTaskId = null;
       }
     }
-    
-    // Toggle task status (complete/incomplete)
+     
     async function toggleTaskStatus(taskId, isCompleted) {
       try {
         await updateDoc(doc(db, 'tasks', taskId), {
@@ -1692,8 +1731,7 @@
         const taskCard = document.querySelector(`.task-card[data-task-id="${taskId}"]`);
         if (taskCard) {
           taskCard.classList.toggle('completed-task', isCompleted);
-          
-          // Add animation for completed tasks
+           
           if (isCompleted) {
             taskCard.style.animation = 'taskComplete 0.5s ease';
             setTimeout(() => {
@@ -1707,15 +1745,13 @@
         showError('Error updating task status: ' + error.message);
       }
     }
-    
-    // Edit task
+     
     function editTask(taskId) {
       const task = allTasks.find(t => t.id === taskId);
       if (!task) return;
       
       editingTaskId = taskId;
-      
-      // Fill the form with task data
+       
       document.getElementById('task-title').value = task.title;
       document.getElementById('task-desc').value = task.desc || '';
       document.getElementById('task-date').value = task.date;
@@ -1723,15 +1759,13 @@
       document.getElementById('task-priority').value = task.priority || 'medium';
       document.getElementById('task-project').value = task.project || '';
       document.getElementById('task-tags').value = task.tags ? task.tags.join(', ') : '';
-      
-      // Update form title
+       
       document.getElementById('task-form-title').textContent = 'Edit Task';
       document.getElementById('submit-btn-text').textContent = 'Update Task';
       
       openTaskForm();
     }
-    
-    // Delete task
+     
     function deleteTask(taskId) {
       showConfirmModal(
         'Are you sure you want to delete this task?',
@@ -1745,8 +1779,7 @@
         }
       );
     }
-    
-    // Handle profile update
+     
     async function handleProfileUpdate(e) {
       e.preventDefault();
       
@@ -1761,8 +1794,7 @@
         const email = document.getElementById('profile-email').value;
         const photoURL = document.getElementById('profile-photo').value;
         const newPassword = document.getElementById('profile-password').value;
-        
-        // Update profile in Firebase Auth
+         
         if (displayName !== currentUser.displayName || photoURL !== currentUser.photoURL) {
           await updateProfile(currentUser, {
             displayName: displayName,
@@ -1777,19 +1809,16 @@
         if (newPassword) {
           await updatePassword(currentUser, newPassword);
         }
-        
-        // Update profile in Firestore
+         
         await setDoc(doc(db, 'users', currentUser.uid), {
           displayName: displayName,
           photoURL: photoURL || null,
           updatedAt: new Date()
         }, { merge: true });
-        
-        // Update UI
+         
         profileName.textContent = displayName;
         profileIcon.src = photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName || currentUser.email)}&background=ff91c8&color=fff`;
-        
-        // Update profile view modal
+         
         document.getElementById('profileViewName').textContent = displayName;
         document.getElementById('profileViewImg').src = photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName || currentUser.email)}&background=ff91c8&color=fff`;
         
@@ -1802,8 +1831,7 @@
         submitBtn.textContent = originalText;
       }
     }
-    
-    // Edit project
+     
     function editProject(projectId, event) {
       event.stopPropagation();
       
@@ -1811,26 +1839,22 @@
       if (!project) return;
       
       editingProjectId = projectId;
-      
-      // Fill the form with project data
+       
       document.getElementById('project-name').value = project.name;
       document.getElementById('project-color').value = project.color;
-      
-      // Update form title
+       
       document.getElementById('project-form-title').textContent = 'Edit Project';
       document.getElementById('project-submit-text').textContent = 'Update Project';
       
       openProjectModal();
     }
-    
-    // Confirm project deletion
+     
     function confirmDeleteProject(projectId, event) {
       event.stopPropagation();
       
       const project = allProjects.find(p => p.id === projectId);
       if (!project) return;
-      
-      // Check if there are tasks associated with this project
+       
       const hasTasks = allTasks.some(task => task.project === projectId);
       
       if (hasTasks) {
@@ -1844,8 +1868,7 @@
           try {
             await deleteDoc(doc(db, 'projects', projectId));
             showSuccess('Project deleted successfully!');
-            
-            // If we were viewing this project, switch to "All Tasks" view
+             
             if (currentView === 'project' && currentFilter === projectId) {
               setView('all', 'All Tasks');
             }
@@ -1855,8 +1878,7 @@
         }
       );
     }
-    
-    // Handle project form submission
+     
     async function handleProjectSubmit(e) {
       e.preventDefault();
       
@@ -1874,12 +1896,10 @@
           createdAt: new Date()
         };
         
-        if (editingProjectId) {
-          // Update existing project
+        if (editingProjectId) { 
           await updateDoc(doc(db, 'projects', editingProjectId), projectData);
           showSuccess('Project updated successfully!');
-        } else {
-          // Add new project
+        } else { 
           await addDoc(collection(db, 'projects'), projectData);
           showSuccess('Project created successfully!');
         }
@@ -1894,8 +1914,7 @@
         editingProjectId = null;
       }
     }
-    
-    // Save settings
+     
     function saveSettings() {
       const notificationsEnabled = document.getElementById('notifications').checked;
       localStorage.setItem('notificationsEnabled', notificationsEnabled);
@@ -1906,25 +1925,21 @@
       showSuccess('Settings saved successfully!');
       closeSettingsModal();
     }
-    
-    // Generate PDF report
+     
     function generateReport() {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
-      
-      // Report title
+       
       doc.setFontSize(20);
       doc.setTextColor(199, 21, 133);
       doc.text('Task Report', 105, 20, { align: 'center' });
-      
-      // User info
+       
       doc.setFontSize(12);
       doc.setTextColor(0, 0, 0);
       doc.text(`Generated by: ${profileName.textContent || 'User'}`, 14, 30);
       doc.text(`Email: ${currentUser.email}`, 14, 37);
       doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 44);
-      
-      // Filter tasks for report
+       
       let reportTasks = [...allTasks];
       if (currentView === 'today') {
         const today = new Date().toISOString().split('T')[0];
@@ -1937,8 +1952,7 @@
       } else if (currentView === 'project') {
         reportTasks = reportTasks.filter(task => task.project === currentFilter);
       }
-      
-      // Prepare data for table
+       
       const tableData = reportTasks.map(task => {
         const project = task.project ? allProjects.find(p => p.id === task.project)?.name : 'None';
         return [
@@ -1950,8 +1964,7 @@
           task.status === 'completed' ? 'Yes' : 'No'
         ];
       });
-      
-      // Add table to PDF
+       
       doc.autoTable({
         head: [['Title', 'Description', 'Due Date', 'Priority', 'Project', 'Completed']],
         body: tableData,
@@ -1965,13 +1978,11 @@
           fillColor: [255, 230, 240]
         }
       });
-      
-      // Save the PDF
+       
       doc.save(`${profileName.textContent || 'User'}_TaskReport_${new Date().toISOString().split('T')[0]}.pdf`);
       showSuccess('Report generated successfully!');
     }
-    
-    // Show success message
+     
     function showSuccess(message) {
       successText.textContent = message;
       successMessage.style.backgroundColor = '#d4edda';
@@ -1982,8 +1993,7 @@
         successMessage.classList.remove('show');
       }, 3000);
     }
-    
-    // Show error message
+     
     function showError(message) {
       successText.textContent = message;
       successMessage.style.backgroundColor = '#f8d7da';
@@ -1994,27 +2004,23 @@
         successMessage.classList.remove('show');
       }, 3000);
     }
-    
-    // Show confirmation modal
+     
     function showConfirmModal(message, callback) {
       document.getElementById('confirmMessage').textContent = message;
       document.getElementById('confirmModal').style.display = 'block';
-      
-      // Set up confirm button
+       
       const confirmBtn = document.getElementById('confirmActionBtn');
       confirmBtn.onclick = () => {
         callback();
         closeConfirmModal();
       };
     }
-    
-    // Close confirmation modal
+     
     function closeConfirmModal() {
       document.getElementById('confirmModal').style.display = 'none';
       document.getElementById('confirmActionBtn').onclick = null;
     }
-    
-    // Format date for display
+     
     function formatDisplayDate(dateString) {
       if (!dateString) return 'No date';
       
@@ -2025,13 +2031,11 @@
         day: 'numeric' 
       });
     }
-    
-    // Format date for input field
+     
     function formatDate(date) {
       return date.toISOString().split('T')[0];
     }
-    
-    // Modal functions
+ 
     function openTaskForm() {
       document.getElementById('taskFormModal').style.display = 'block';
       document.getElementById('task-title').focus();
@@ -2055,7 +2059,7 @@
     }
     
     function openSettingsModal() {
-      // Load saved settings
+       
       document.getElementById('notifications').checked = localStorage.getItem('notificationsEnabled') === 'true';
       
       const savedTheme = localStorage.getItem('theme') || 'pink';
@@ -2082,26 +2086,22 @@
       document.getElementById('projectForm').reset();
       editingProjectId = null;
     }
-    
-    // Profile menu toggle
+     
     function toggleProfileMenu() {
       const menu = document.getElementById('profileMenu');
       menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
     }
-    
-    // Close profile menu when clicking outside
+     
     document.addEventListener('click', (e) => {
       if (!e.target.closest('.profile-section')) {
         document.getElementById('profileMenu').style.display = 'none';
       }
     });
-    
-    // Confirm logout
+     
     function confirmLogout() {
       showConfirmModal('Are you sure you want to logout?', logout);
     }
-    
-    // Logout function
+     
     async function logout() {
       try {
         await signOut(auth);
@@ -2110,8 +2110,7 @@
         showError('Error signing out: ' + error.message);
       }
     }
-    
-    // Make functions available globally
+     
     window.openTaskForm = openTaskForm;
     window.closeTaskForm = closeTaskForm;
     window.viewProfile = viewProfile;
