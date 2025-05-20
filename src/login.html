@@ -205,27 +205,22 @@
 
       const email = document.getElementById("login-email").value.trim();
       const password = document.getElementById("login-password").value;
-
-      // Show loading spinner and disable button
+ 
       loginButton.style.display = 'none';
       spinner.style.display = 'block';
 
       try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        
-        // Show success message
+         
         successMessage.classList.add('show');
-        
-        // Redirect after a short delay
+         
         setTimeout(() => {
           window.location.href = "dashboard.html"; 
         }, 1500);
         
       } catch (error) {
-        // Show error message (you could create a similar UI for errors)
-        alert("Login failed: " + error.message);
-        
-        // Reset button and spinner
+         alert("Login failed: " + error.message);
+         
         loginButton.style.display = 'block';
         spinner.style.display = 'none';
       }
