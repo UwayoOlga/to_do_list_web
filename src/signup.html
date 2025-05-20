@@ -212,9 +212,9 @@
   <div class="notification error" id="errorMessage"></div>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyA_iYY1cpnwjW4idgEmpVScj3SecxN2Qss",
@@ -274,17 +274,17 @@
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-
+ 
         await setDoc(doc(db, "users", user.uid), {
           userId: user.uid,
-          name: name,
+          displayName: name,
           email: email,
           createdAt: new Date()
         });
 
         showSuccess();
         setTimeout(() => {
-          window.location.href = "login.html";
+          window.location.href = "dashboard.html";
         }, 1500);
       } catch (error) {
         showError(error.message);
